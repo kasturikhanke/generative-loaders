@@ -21,8 +21,8 @@ test("server-renders the Progress Narrative gallery", async () => {
 
   const html = await response.text();
   assert.match(html, /<title>Progress Narrative/);
-  assert.match(html, /Show the work/);
-  assert.match(html, /Twelve motion directions/);
+  assert.match(html, /Thinking steps/);
+  assert.match(html, /Framer Motion/);
   assert.match(html, /Orbit/);
   assert.match(html, /Constellation/);
   assert.match(html, /npm install progress-narrative/);
@@ -37,8 +37,8 @@ test("ships final metadata and removes the disposable starter", async () => {
   ]);
 
   assert.match(layout, /Progress Narrative/);
-  assert.match(layout, /og-v3\.png/);
+  assert.match(layout, /og-v4\.png/);
   assert.doesNotMatch(packageJson, /react-loading-skeleton/);
-  await access(new URL("../public/og-v3.png", import.meta.url));
+  await access(new URL("../public/og-v4.png", import.meta.url));
   await assert.rejects(access(new URL("../app/_sites-preview", import.meta.url)));
 });
