@@ -159,6 +159,11 @@ export default function Home() {
   const [playing, setPlaying] = useState(true);
   const [motion, setMotion] = useState<NarrativeMotion>("cascade");
   const [action, setAction] = useState<ProgressAction>("search");
+  const [galleryKey, setGalleryKey] = useState(0);
+  const [liked, setLiked] = useState(false);
+  const [following, setFollowing] = useState(false);
+  const [switchOn, setSwitchOn] = useState(true);
+  const [saved, setSaved] = useState(false);
   const scene = scenes[sceneIndex];
 
   useEffect(() => {
@@ -227,6 +232,129 @@ export default function Home() {
 
       <section className="marquee" aria-label="Component features">
         <div><span>Token-level transitions</span><i>✦</i><span>Live region announcements</span><i>✦</i><span>Motion with meaning</span><i>✦</i><span>Themeable in seconds</span><i>✦</i><span>Token-level transitions</span></div>
+      </section>
+
+      <section className="motion-wall section-shell" id="interactions">
+        <div className="motion-wall-head">
+          <div>
+            <p className="section-kicker">The interaction wall / 12 studies</p>
+            <h2>More than a loading line.<br /><em>A whole language of feedback.</em></h2>
+          </div>
+          <button type="button" onClick={() => setGalleryKey((value) => value + 1)}><span aria-hidden="true">↻</span> Replay everything</button>
+        </div>
+
+        <div className="interaction-grid" key={galleryKey}>
+          <article className="interaction-tile tile-search">
+            <div className="tile-top"><span>01 · Search reveal</span><small>Auto</small></div>
+            <div className="tile-canvas">
+              <div className="search-box"><i aria-hidden="true" /><span>restaurant with a view</span><b /></div>
+              <div className="search-result"><span className="result-thumb">N</span><span><strong>Noma Projects</strong><small>Østerbro · 4.9</small></span><em>↗</em></div>
+            </div>
+            <p>Reveal the best match as the query resolves.</p>
+          </article>
+
+          <article className="interaction-tile tile-toast">
+            <div className="tile-top"><span>02 · Toast choreography</span><small>Auto</small></div>
+            <div className="tile-canvas toast-stage">
+              <div className="toast toast-one"><i>✓</i><span><strong>Changes published</strong><small>Just now</small></span></div>
+              <div className="toast toast-two"><i>↗</i><span><strong>Preview is ready</strong><small>Open in new tab</small></span></div>
+              <div className="toast toast-three"><i>2</i><span><strong>New comments</strong><small>Maya and Rowan</small></span></div>
+            </div>
+            <p>Stagger alerts so they arrive as a readable queue.</p>
+          </article>
+
+          <article className="interaction-tile tile-magnetic">
+            <div className="tile-top"><span>03 · Magnetic action</span><small>Hover</small></div>
+            <div className="tile-canvas magnetic-stage">
+              <button type="button" className="magnetic-button"><span>Start a project</span><i aria-hidden="true">↗</i></button>
+              <div className="magnetic-orbit" aria-hidden="true"><i /><i /></div>
+            </div>
+            <p>A tiny pull makes the primary action feel tangible.</p>
+          </article>
+
+          <article className="interaction-tile tile-counter">
+            <div className="tile-top"><span>04 · Rolling metric</span><small>Auto</small></div>
+            <div className="tile-canvas counter-stage">
+              <span>Conversion</span>
+              <div className="rolling-number"><strong>+</strong><i><b>0<br />1<br />2<br />3<br />4<br />5<br />6<br />7<br />8</b></i><i className="digit-two"><b>0<br />1<br />2<br />3<br />4<br />5<br />6<br />7<br />8<br />9</b></i><em>.4%</em></div>
+              <div className="micro-chart" aria-hidden="true"><i /><i /><i /><i /><i /><i /><i /><i /></div>
+            </div>
+            <p>Animate the value, then let the number hold attention.</p>
+          </article>
+
+          <article className="interaction-tile tile-dock">
+            <div className="tile-top"><span>05 · Proximity dock</span><small>Hover</small></div>
+            <div className="tile-canvas dock-stage">
+              <div className="mini-window"><span /><span /><span /></div>
+              <div className="dock" aria-label="Example navigation">
+                <button type="button" aria-label="Home">⌂</button><button type="button" aria-label="Search">⌕</button><button type="button" aria-label="Add">＋</button><button type="button" aria-label="Messages">✦</button><button type="button" aria-label="Profile">◉</button>
+              </div>
+            </div>
+            <p>Scale controls by proximity, not just on/off hover.</p>
+          </article>
+
+          <article className="interaction-tile tile-orbit">
+            <div className="tile-top"><span>06 · Ambient orbit</span><small>Auto</small></div>
+            <div className="tile-canvas orbit-stage">
+              <div className="orbit-copy"><strong>Everything synced</strong><small>Across 3 devices</small></div>
+              <div className="orbit-system" aria-hidden="true"><span>✓</span><i /><i /><i /></div>
+            </div>
+            <p>Let a calm ambient loop carry background status.</p>
+          </article>
+
+          <article className="interaction-tile tile-ring">
+            <div className="tile-top"><span>07 · Elastic progress</span><small>Auto</small></div>
+            <div className="tile-canvas ring-stage">
+              <div className="progress-ring"><span>84<small>%</small></span></div>
+              <div><strong>Uploading campaign.mov</strong><small>42.8 MB of 51 MB</small><button type="button">Cancel</button></div>
+            </div>
+            <p>Pair exact progress with a softer, elastic finish.</p>
+          </article>
+
+          <article className="interaction-tile tile-tilt">
+            <div className="tile-top"><span>08 · Dimensional card</span><small>Hover</small></div>
+            <div className="tile-canvas tilt-stage">
+              <div className="tilt-card"><span>PRO / 08</span><strong>Motion<br />makes meaning.</strong><i>Explore ↗</i></div>
+            </div>
+            <p>Depth and glare turn a static card into an object.</p>
+          </article>
+
+          <article className="interaction-tile tile-toggle">
+            <div className="tile-top"><span>09 · State bloom</span><small>Click</small></div>
+            <div className="tile-canvas toggle-stage">
+              <div><strong>Focus mode</strong><small>Mute everything else</small></div>
+              <button className={switchOn ? "switch is-on" : "switch"} type="button" role="switch" aria-checked={switchOn} onClick={() => setSwitchOn((value) => !value)}><span /></button>
+              <i className={switchOn ? "state-bloom is-on" : "state-bloom"} aria-hidden="true" />
+            </div>
+            <p>Make a state change radiate beyond the switch.</p>
+          </article>
+
+          <article className="interaction-tile tile-like">
+            <div className="tile-top"><span>10 · Particle favorite</span><small>Click</small></div>
+            <div className="tile-canvas like-stage">
+              <button className={liked ? "like-button is-liked" : "like-button"} type="button" aria-pressed={liked} onClick={() => setLiked((value) => !value)}><span aria-hidden="true">♥</span><strong>{liked ? "2,849" : "2,848"}</strong><i /><i /><i /><i /></button>
+            </div>
+            <p>Reward intent with a crisp pop, count, and particles.</p>
+          </article>
+
+          <article className="interaction-tile tile-follow">
+            <div className="tile-top"><span>11 · Morphing follow</span><small>Click</small></div>
+            <div className="tile-canvas follow-stage">
+              <div className="avatar-stack"><span>RA</span><i /><i /></div>
+              <div><strong>Rowan Ames</strong><small>Product designer</small></div>
+              <button className={following ? "is-following" : ""} type="button" onClick={() => setFollowing((value) => !value)}>{following ? "Following ✓" : "Follow +"}</button>
+            </div>
+            <p>Let the control physically settle into its new state.</p>
+          </article>
+
+          <article className="interaction-tile tile-save">
+            <div className="tile-top"><span>12 · Save confirmation</span><small>Click</small></div>
+            <div className="tile-canvas save-stage">
+              <button className={saved ? "save-button is-saved" : "save-button"} type="button" onClick={() => setSaved((value) => !value)}><i aria-hidden="true">{saved ? "✓" : "↓"}</i><span>{saved ? "Saved to collection" : "Save interaction"}</span><em>{saved ? "View" : "⌘ S"}</em></button>
+            </div>
+            <p>Confirm the action inside the control that caused it.</p>
+          </article>
+        </div>
       </section>
 
       <section className="recipes section-shell" id="recipes">
