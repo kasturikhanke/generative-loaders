@@ -57,12 +57,14 @@
 
 .pn-token {
   display: inline-block;
-  animation: pn-token-enter var(--pn-duration) cubic-bezier(0.2, 0.8, 0.2, 1) both;
-  animation-delay: calc(var(--pn-token-index, 0) * 18ms);
+  will-change: transform, opacity, filter, clip-path;
+  animation: pn-flow-enter var(--pn-duration) cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: calc(var(--pn-token-index, 0) * 20ms);
 }
 
 .pn-token--stable {
-  animation-name: pn-token-settle;
+  animation-name: pn-token-settle !important;
+  animation-delay: 0ms !important;
 }
 
 .pn-token--number {
@@ -78,16 +80,16 @@
   place-items: center;
   border: 1px solid color-mix(in srgb, var(--pn-muted) 45%, transparent);
   color: var(--pn-muted);
-  border-radius: 50%;
+  border-radius: 5px;
   font-size: 11px;
   line-height: 1;
 }
 
 .pn-mark--active {
   border-color: var(--pn-accent);
-  background: conic-gradient(from 180deg, var(--pn-accent), transparent 66%);
-  box-shadow: inset 0 0 0 4px var(--pn-surface);
-  animation: pn-pulse 1.8s ease-in-out infinite;
+  background: var(--pn-accent);
+  transform: scale(0.52);
+  animation: pn-mark-breathe 1.6s cubic-bezier(0.45, 0, 0.55, 1) infinite;
 }
 
 .pn-mark--complete {
@@ -186,9 +188,82 @@
   border: 0 !important;
 }
 
-@keyframes pn-token-enter {
-  from { opacity: 0; transform: translateY(0.72em); filter: blur(3px); }
+/* Flow — directional continuity. New information moves forward into place. */
+@keyframes pn-flow-enter {
+  from { opacity: 0; transform: translateY(0.7em); }
   to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+/* Focus — hierarchy through optical focus, with no implied direction. */
+.pn-line[data-motion="focus"] .pn-token {
+  animation-name: pn-focus-enter;
+  animation-delay: calc(var(--pn-token-index, 0) * 10ms);
+}
+@keyframes pn-focus-enter {
+  from { opacity: 0; filter: blur(8px); transform: scale(0.97); }
+  to { opacity: 1; filter: blur(0); transform: scale(1); }
+}
+
+/* Cascade — staged disclosure from verb to value to subject. */
+.pn-line[data-motion="cascade"] .pn-token {
+  animation-name: pn-cascade-enter;
+  animation-duration: calc(var(--pn-duration) + 90ms);
+  animation-delay: calc(var(--pn-token-index, 0) * 58ms);
+}
+@keyframes pn-cascade-enter {
+  from { opacity: 0; transform: translateX(-0.55em); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Flip — a direct state replacement with a strong pivot. */
+.pn-line[data-motion="flip"] .pn-phrase { perspective: 500px; }
+.pn-line[data-motion="flip"] .pn-token {
+  animation-name: pn-flip-enter;
+  animation-delay: calc(var(--pn-token-index, 0) * 24ms);
+  transform-origin: 50% 100%;
+}
+@keyframes pn-flip-enter {
+  from { opacity: 0; transform: rotateX(-82deg) translateY(0.18em); }
+  to { opacity: 1; transform: rotateX(0) translateY(0); }
+}
+
+/* Wipe — anticipation is created by a leading signal line. */
+.pn-line[data-motion="wipe"] .pn-phrase { position: relative; }
+.pn-line[data-motion="wipe"] .pn-phrase::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--pn-accent);
+  transform-origin: left;
+  animation: pn-wipe-line 460ms cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+.pn-line[data-motion="wipe"] .pn-token {
+  animation-name: pn-wipe-enter;
+  animation-delay: calc(80ms + var(--pn-token-index, 0) * 16ms);
+}
+@keyframes pn-wipe-enter {
+  from { opacity: 0; clip-path: inset(0 100% 0 0); }
+  to { opacity: 1; clip-path: inset(0 0 0 0); }
+}
+@keyframes pn-wipe-line {
+  0% { transform: scaleX(0); opacity: 1; }
+  58% { transform: scaleX(1); opacity: 1; }
+  100% { transform: scaleX(1); opacity: 0; }
+}
+
+/* Snap — fast feedback with restrained follow-through. */
+.pn-line[data-motion="snap"] .pn-token {
+  animation-name: pn-snap-enter;
+  animation-duration: calc(var(--pn-duration) + 100ms);
+  animation-delay: calc(var(--pn-token-index, 0) * 14ms);
+}
+@keyframes pn-snap-enter {
+  0% { opacity: 0; transform: scale(0.72) translateY(0.2em); }
+  66% { opacity: 1; transform: scale(1.055) translateY(0); }
+  100% { opacity: 1; transform: scale(1); }
 }
 
 @keyframes pn-token-settle {
@@ -196,9 +271,9 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes pn-pulse {
-  0%, 100% { transform: rotate(0deg); opacity: 0.72; }
-  50% { transform: rotate(180deg); opacity: 1; }
+@keyframes pn-mark-breathe {
+  0%, 100% { transform: scale(0.44); opacity: 0.62; }
+  50% { transform: scale(0.62); opacity: 1; }
 }
 
 @keyframes pn-reveal {

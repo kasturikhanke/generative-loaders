@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   ProgressNarrative,
+  type NarrativeMotion,
   type ProgressAction,
   type ProgressEvent,
 } from "progress-narrative";
@@ -16,12 +17,16 @@ const research: ProgressEvent[] = [
   { id: "ready", action: "complete", phase: "complete", result: "Draft ready" },
 ];
 
-const errorEvents: ProgressEvent[] = [
-  { id: "service", action: "wait", phase: "error", result: "Billing service unavailable" },
-  { id: "cache", action: "read", phase: "active", subject: "cached records" },
-];
-
 const actions: ProgressAction[] = ["search", "read", "compare", "analyze", "verify", "draft", "revise", "wait", "complete"];
+
+const motionStudies: Array<{ motion: NarrativeMotion; name: string; principle: string }> = [
+  { motion: "flow", name: "Flow", principle: "Directional continuity" },
+  { motion: "focus", name: "Focus", principle: "Optical hierarchy" },
+  { motion: "cascade", name: "Cascade", principle: "Staged disclosure" },
+  { motion: "flip", name: "Flip", principle: "Direct state change" },
+  { motion: "wipe", name: "Wipe", principle: "Anticipation" },
+  { motion: "snap", name: "Snap", principle: "Follow-through" },
+];
 
 function CopyCode({ children }: { children: string }) {
   const [copied, setCopied] = useState(false);
@@ -44,6 +49,7 @@ export default function Home() {
   const [action, setAction] = useState<ProgressAction>("search");
   const [count, setCount] = useState(6);
   const [subject, setSubject] = useState("sources");
+  const [motion, setMotion] = useState<NarrativeMotion>("flow");
 
   useEffect(() => {
     if (!playing) return;
@@ -66,6 +72,7 @@ import "progress-narrative/styles.css";
 
 <ProgressNarrative
   events={${JSON.stringify(customEvents, null, 2)}}
+  motion="${motion}"
 />`;
 
   return (
@@ -81,22 +88,19 @@ import "progress-narrative/styles.css";
         <p>Readable, animated progress for React agents.</p>
       </header>
 
-      <section className="examples" aria-label="Component examples">
-        <article className="example-card example-card--wide">
-          <span className="card-label">Live research</span>
-          <ProgressNarrative events={liveEvents} defaultExpanded minVisibleMs={350} />
-          <button className="replay" type="button" onClick={() => setPlaying((value) => !value)}>{playing ? "Pause" : "Play"}</button>
-        </article>
-
-        <article className="example-card">
-          <span className="card-label">Compact</span>
-          <ProgressNarrative events={[{ id: "a", action: "analyze", phase: "active", count: 12, subject: "metrics" }]} history="hidden" />
-        </article>
-
-        <article className="example-card">
-          <span className="card-label">Recovery</span>
-          <ProgressNarrative events={errorEvents} history="visible" />
-        </article>
+      <section className="motion-section" aria-labelledby="motion-title">
+        <div className="motion-heading">
+          <div><h2 id="motion-title">Motion studies</h2><p>One changing sentence, six animation principles.</p></div>
+          <button className="replay" type="button" onClick={() => setPlaying((value) => !value)}>{playing ? "Pause all" : "Play all"}</button>
+        </div>
+        <div className="examples">
+          {motionStudies.map((study) => (
+            <article className="example-card" key={study.motion}>
+              <div className="card-title"><span>{study.name}</span><small>{study.principle}</small></div>
+              <ProgressNarrative events={liveEvents} history="hidden" minVisibleMs={350} motion={study.motion} />
+            </article>
+          ))}
+        </div>
       </section>
 
       <section className="install" id="install">
@@ -116,8 +120,9 @@ import "progress-narrative/styles.css";
             <label>Action<select value={action} onChange={(event) => setAction(event.target.value as ProgressAction)}>{actions.map((value) => <option key={value}>{value}</option>)}</select></label>
             <label>Count<input type="number" min="0" value={count} disabled={action === "complete"} onChange={(event) => setCount(Number(event.target.value))} /></label>
             <label>Subject<input value={subject} disabled={action === "complete"} onChange={(event) => setSubject(event.target.value)} /></label>
+            <label>Motion<select value={motion} onChange={(event) => setMotion(event.target.value as NarrativeMotion)}>{motionStudies.map((study) => <option value={study.motion} key={study.motion}>{study.name}</option>)}</select></label>
           </form>
-          <div className="playground-preview"><ProgressNarrative events={customEvents} history="hidden" /></div>
+          <div className="playground-preview"><ProgressNarrative events={customEvents} history="hidden" motion={motion} /></div>
           <CopyCode>{usage}</CopyCode>
         </div>
       </section>

@@ -3,6 +3,7 @@ export { formatProgressEvent, normalizeProgressEvents } from "./format.js";
 export type {
   NarrativeHistoryProps,
   NarrativeLineProps,
+  NarrativeMotion,
   ProgressAction,
   ProgressEvent,
   ProgressFormatter,

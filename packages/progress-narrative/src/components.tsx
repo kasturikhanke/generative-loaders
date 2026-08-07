@@ -70,6 +70,7 @@ export function NarrativeLine({
   event,
   formatEvent = formatProgressEvent,
   minVisibleMs = 650,
+  motion = "flow",
   className,
 }: NarrativeLineProps) {
   const committed = useCommittedEvent(event, minVisibleMs);
@@ -95,7 +96,7 @@ export function NarrativeLine({
   if (!committed) return null;
 
   return (
-    <div className={cx("pn-line", className)} data-phase={committed.phase}>
+    <div className={cx("pn-line", className)} data-phase={committed.phase} data-motion={motion}>
       <PhaseMark phase={committed.phase} />
       <span className="pn-phrase" aria-hidden="true">
         {currentTokens.map((token, index) => {
@@ -173,6 +174,7 @@ export function ProgressNarrative({
   history = "collapsible",
   defaultExpanded = false,
   minVisibleMs = 650,
+  motion = "flow",
   maxItems = 20,
   renderDetail,
   className,
@@ -190,6 +192,7 @@ export function ProgressNarrative({
           event={current}
           formatEvent={formatEvent}
           minVisibleMs={minVisibleMs}
+          motion={motion}
         />
         {history === "collapsible" && normalized.length > 1 ? (
           <button

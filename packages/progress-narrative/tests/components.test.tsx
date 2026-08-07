@@ -21,11 +21,12 @@ describe("components", () => {
   });
 
   it("provides a polite atomic status announcement", () => {
-    render(<NarrativeLine event={events[1]} />);
+    render(<NarrativeLine event={events[1]} motion="focus" />);
     const status = screen.getByRole("status");
     expect(status).toHaveAttribute("aria-live", "polite");
     expect(status).toHaveAttribute("aria-atomic", "true");
     expect(status).toHaveTextContent("Comparing 3 results");
+    expect(status.closest(".pn-line")).toHaveAttribute("data-motion", "focus");
   });
 
   it("opens and closes activity history with an accessible button", () => {

@@ -13,6 +13,14 @@ export type ProgressAction =
 
 export type ProgressPhase = "queued" | "active" | "complete" | "error";
 
+export type NarrativeMotion =
+  | "flow"
+  | "focus"
+  | "cascade"
+  | "flip"
+  | "wipe"
+  | "snap";
+
 export interface ProgressEvent {
   id: string;
   action: ProgressAction;
@@ -32,6 +40,7 @@ export interface NarrativeLineProps {
   event?: ProgressEvent;
   formatEvent?: ProgressFormatter;
   minVisibleMs?: number;
+  motion?: NarrativeMotion;
   className?: string;
 }
 
@@ -48,6 +57,7 @@ export interface ProgressNarrativeProps
   history?: "collapsible" | "visible" | "hidden";
   defaultExpanded?: boolean;
   minVisibleMs?: number;
+  motion?: NarrativeMotion;
   className?: string;
   historyLabel?: string;
 }

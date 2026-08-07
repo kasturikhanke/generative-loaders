@@ -29,13 +29,19 @@ header { padding: 72px 0 58px; text-align: center; }
 h1 { margin: 0 0 10px; font-size: clamp(34px, 6vw, 52px); line-height: 1; letter-spacing: -.055em; font-weight: 540; }
 header p { margin: 0; color: var(--muted); font-size: 15px; }
 
+.motion-section { padding-bottom: 80px; border-bottom: 1px solid var(--line); }
+.motion-heading { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; }
+.motion-heading h2 { margin-bottom: 7px; }
+.motion-heading p { margin: 0; color: var(--muted); font-size: 13px; }
 .examples { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line); }
-.example-card { min-height: 250px; padding: 26px; display: flex; flex-direction: column; justify-content: center; gap: 20px; border-top: 1px solid var(--line); }
-.example-card:nth-child(2) { border-right: 1px solid var(--line); }
-.example-card--wide { grid-column: 1 / -1; min-height: 310px; padding: 42px 70px; border-top: 0; }
-.card-label { align-self: flex-start; color: var(--muted); font-family: var(--font-geist-mono), monospace; font-size: 10px; text-transform: uppercase; letter-spacing: .1em; }
+.example-card { min-height: 190px; padding: 24px; display: flex; flex-direction: column; justify-content: center; gap: 24px; border-bottom: 1px solid var(--line); }
+.example-card:nth-child(odd) { border-right: 1px solid var(--line); }
+.example-card:nth-last-child(-n + 2) { border-bottom: 0; }
+.card-title { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; font-family: var(--font-geist-mono), monospace; }
+.card-title span { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; }
+.card-title small { color: var(--muted); font-size: 9px; }
 .examples .pn-root { --pn-surface: #e9e4d9; --pn-border: #cec7ba; --pn-accent: var(--blue); }
-.replay { align-self: flex-end; border: 0; background: transparent; color: var(--muted); font-size: 11px; cursor: pointer; }
+.replay { border: 0; background: transparent; color: var(--muted); font-size: 11px; cursor: pointer; }
 
 .install, .playground { padding: 80px 0; border-bottom: 1px solid var(--line); }
 h2 { margin: 0 0 18px; font-size: 18px; letter-spacing: -.025em; font-weight: 540; }
@@ -48,7 +54,7 @@ h2 { margin: 0 0 18px; font-size: 18px; letter-spacing: -.025em; font-weight: 54
 .section-title h2 { margin-bottom: 7px; }
 .section-title p { margin: 0; color: var(--muted); font-size: 13px; }
 .playground-panel { border: 1px solid var(--line); }
-.playground-panel form { display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid var(--line); }
+.playground-panel form { display: grid; grid-template-columns: repeat(4, 1fr); border-bottom: 1px solid var(--line); }
 .playground-panel label { padding: 18px; display: grid; gap: 8px; color: var(--muted); font-family: var(--font-geist-mono), monospace; font-size: 9px; text-transform: uppercase; letter-spacing: .1em; border-right: 1px solid var(--line); }
 .playground-panel label:last-child { border-right: 0; }
 .playground-panel input, .playground-panel select { width: 100%; border: 0; border-bottom: 1px solid var(--line); padding: 7px 0; background: transparent; color: var(--ink); font-family: var(--font-geist-sans), sans-serif; font-size: 14px; text-transform: none; letter-spacing: 0; }
@@ -62,8 +68,9 @@ footer { padding: 34px 0 48px; display: flex; justify-content: space-between; co
   .site-shell { width: min(100% - 28px, 900px); }
   header { padding: 56px 0 44px; }
   .examples { grid-template-columns: 1fr; }
-  .example-card, .example-card--wide { grid-column: auto; min-height: 220px; padding: 24px; border-right: 0 !important; }
-  .example-card:nth-child(2) { border-right: 0; }
+  .motion-heading { align-items: flex-start; }
+  .example-card { min-height: 180px; padding: 22px; border-right: 0 !important; border-bottom: 1px solid var(--line) !important; }
+  .example-card:last-child { border-bottom: 0 !important; }
   .playground-panel form { grid-template-columns: 1fr; }
   .playground-panel label { border-right: 0; border-bottom: 1px solid var(--line); }
   .playground-preview { padding: 24px 16px; }
