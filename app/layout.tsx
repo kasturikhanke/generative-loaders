@@ -7,14 +7,14 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"]
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://progress-narrative.kkasturi2502.chatgpt.site"),
-  title: "Progress Narrative — Readable progress for React agents",
-  description: "A gallery of polished progress patterns and micro-interactions for React interfaces.",
+  title: "Progress Narrative — 12 animated thinking steps",
+  description: "Twelve motion variations for showing clear operational progress in React agent interfaces.",
   openGraph: {
     title: "Progress Narrative",
-    description: "12 interaction studies for the moments between a click and a result.",
-    images: [{ url: "/og-v2.png", width: 1536, height: 1024, alt: "Progress Narrative — 12 interaction studies" }],
+    description: "Show the work. Shape the wait. Twelve animated thinking-step variations.",
+    images: [{ url: "/og-v3.png", width: 1536, height: 1024, alt: "Progress Narrative — 12 animated thinking steps" }],
   },
-  twitter: { card: "summary_large_image", title: "Progress Narrative", description: "12 interaction studies for the moments between a click and a result.", images: ["/og-v2.png"] },
+  twitter: { card: "summary_large_image", title: "Progress Narrative", description: "Show the work. Shape the wait.", images: ["/og-v3.png"] },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
