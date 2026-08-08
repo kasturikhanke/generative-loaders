@@ -537,7 +537,7 @@ export default function Home() {
           whileHover={{ y: -3, transition: { ...spring, delay: 0 } }}
         >
           <span className="image-number">{String(index + 1).padStart(2, "0")}</span>
-          <div className="image-demo"><ImageLoader key={`${loader.id}-${cardCycles[`image-${loader.id}`] ?? 0}`} variant={loader.id} size={150} radius={15} speed={speed} color={imageLoaderColor} paused={paused} /></div>
+          <div className="image-demo"><ImageLoaderDemo key={`${loader.id}-${cardCycles[`image-${loader.id}`] ?? 0}`} variant={loader.id} speed={speed} color={imageLoaderColor} paused={paused} /></div>
           <div className="image-copy"><strong>{loader.name}</strong></div>
           <CardCopyButton collection="image" id={loader.id} name={loader.name} />
         </motion.article>)}
