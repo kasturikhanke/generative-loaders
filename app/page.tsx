@@ -2,7 +2,7 @@
 
 import { ImageLoader, InlineLoader, TextLoader, type ImageLoaderVariant, type InlineLoaderVariant, type TextLoaderVariant } from "generative-loaders";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { BrandMark } from "./components/brand-mark";
 import { GitHubButton } from "./components/github-button";
 
@@ -243,6 +243,9 @@ export default function Home() {
   const [paused, setPaused] = useState(false);
   const [restartKey, setRestartKey] = useState(0);
   const [pickerCycle, setPickerCycle] = useState(0);
+  const [selectorAtEnd, setSelectorAtEnd] = useState(false);
+  const [selectorCanScroll, setSelectorCanScroll] = useState(false);
+  const selectorListRef = useRef<HTMLDivElement>(null);
   const [cardCycles, setCardCycles] = useState<Record<string, number>>({});
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const loaderColor = theme === "dark" ? "#f4f4f5" : "#111111";
@@ -261,6 +264,17 @@ export default function Home() {
     const timer = window.setTimeout(() => setPickerCycle((value) => value + 1), 2400 / speed);
     return () => window.clearTimeout(timer);
   }, [contextFormat, paused, pickerCycle, speed]);
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      const list = selectorListRef.current;
+      if (!list) return;
+      list.scrollTop = 0;
+      setSelectorAtEnd(false);
+      setSelectorCanScroll(list.scrollHeight > list.clientHeight + 2);
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [collection]);
 
   function toggleTheme() {
     const nextTheme: Theme = theme === "light" ? "dark" : "light";
@@ -304,6 +318,18 @@ export default function Home() {
     restart();
   }
 
+  function updateSelectorPosition() {
+    const list = selectorListRef.current;
+    if (!list) return;
+    setSelectorAtEnd(list.scrollTop + list.clientHeight >= list.scrollHeight - 3);
+  }
+
+  function moveSelector() {
+    const list = selectorListRef.current;
+    if (!list) return;
+    list.scrollTo({ top: selectorAtEnd ? 0 : list.scrollTop + list.clientHeight * .72, behavior: "smooth" });
+  }
+
   return <main id="top">
     <nav className="nav shell">
       <a className="brand" href="#top"><BrandMark />Generative Loaders</a>
@@ -327,7 +353,8 @@ export default function Home() {
             <button type="button" role="tab" aria-selected={collection === "image"} className={collection === "image" ? "active" : ""} onClick={() => selectCollection("image")}>Image <span>08</span></button>
           </div>
           <div className="loader-selector-heading"><span>Select a loader</span><small>{collection === "text" ? loaders.find((loader) => loader.id === selected)?.name : collection === "inline" ? inlineLoaders.find((loader) => loader.id === selectedInline)?.name : imageLoaders.find((loader) => loader.id === selectedImage)?.name}</small></div>
-          <div className="loader-selector-list" role="listbox" aria-label={`${collection} loader variants`}>
+          <div className="loader-selector-list-wrap" data-scrollable={selectorCanScroll ? "true" : "false"} data-at-end={selectorAtEnd ? "true" : "false"}>
+          <div className="loader-selector-list" ref={selectorListRef} onScroll={updateSelectorPosition} role="listbox" aria-label={`${collection} loader variants`}>
             {collection === "text" ? loaders.map((loader) => <button type="button" role="option" aria-selected={selected === loader.id} className={selected === loader.id ? "selected" : ""} key={loader.id} onClick={() => selectLoader(loader)}>
               <span className="selector-preview selector-text"><TextLoader key={`${loader.id}-${restartKey}-${pickerCycle}`} text={loader.name} variant={loader.id} color={loaderColor} speed={speed} paused={paused} /></span><span>{loader.name}</span>
             </button>) : collection === "inline" ? inlineLoaders.map((loader) => <button type="button" role="option" aria-selected={selectedInline === loader.id} className={selectedInline === loader.id ? "selected" : ""} key={loader.id} onClick={() => { setSelectedInline(loader.id); setContextFormat(contextFormat === "page" ? "page" : "button"); restart(); }}>
@@ -335,6 +362,8 @@ export default function Home() {
             </button>) : imageLoaders.map((loader) => <button type="button" role="option" aria-selected={selectedImage === loader.id} className={selectedImage === loader.id ? "selected" : ""} key={loader.id} onClick={() => { setSelectedImage(loader.id); setContextFormat("image"); restart(); }}>
               <span className="selector-preview selector-image"><ImageLoader variant={loader.id} size={34} radius={6} speed={speed} color={imageLoaderColor} paused={paused} /></span><span>{loader.name}</span>
             </button>)}
+          </div>
+          {selectorCanScroll && <button className="loader-scroll-hint" type="button" onClick={moveSelector}>{selectorAtEnd ? "Back to top" : "More loaders"}<span aria-hidden="true">{selectorAtEnd ? "↑" : "↓"}</span></button>}
           </div>
         </div>
       </aside>
