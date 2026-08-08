@@ -233,7 +233,7 @@ function SiteFooter() {
 }
 
 export default function Home() {
-  const [theme, setTheme] = useState<Theme>("light");
+  const [theme, setTheme] = useState<Theme>("dark");
   const [collection, setCollection] = useState<LoaderCollection>("text");
   const [contextFormat, setContextFormat] = useState<ContextFormat>("button");
   const [selected, setSelected] = useState<TextLoaderVariant>("decode");
