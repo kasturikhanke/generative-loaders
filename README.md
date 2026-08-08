@@ -7,7 +7,7 @@
 
 Accessible React loading states designed for generative interfaces: sixteen animated text reveals, fourteen compact activity indicators, and nine image-generation placeholders.
 
-[Live gallery](https://progress-narrative.kkasturi2502.chatgpt.site) · [Documentation](https://progress-narrative.kkasturi2502.chatgpt.site/docs) · [npm](https://www.npmjs.com/package/generative-loaders) · [Report an issue](https://github.com/kasturikhanke/generative-loaders/issues/new/choose)
+[Live gallery](https://generativeloaders.com) · [Documentation](https://generativeloaders.com/docs) · [npm](https://www.npmjs.com/package/generative-loaders) · [Report an issue](https://github.com/kasturikhanke/generative-loaders/issues/new/choose)
 
 ![Generative Loaders gallery showing text, inline, and image loading states](./public/generative-loaders-og.png)
 
@@ -89,7 +89,7 @@ export function StreamingAnswer() {
 
 **Image:** `skeleton`, `bands`, `tiles`, `scan`, `pixel-grid`, `resolution`, `focus`, `shutter`, `contour`
 
-See every variant, speed control, and usage context in the [live gallery](https://progress-narrative.kkasturi2502.chatgpt.site).
+See every variant, speed control, and usage context in the [live gallery](https://generativeloaders.com).
 
 ## API
 
@@ -137,7 +137,7 @@ npm run lint
 npm pack --workspace generative-loaders --dry-run
 ```
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full workflow. For help using the package, read the [documentation](https://progress-narrative.kkasturi2502.chatgpt.site/docs) or [open an issue](https://github.com/kasturikhanke/generative-loaders/issues/new/choose).
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full workflow. For help using the package, read the [documentation](https://generativeloaders.com/docs) or [open an issue](https://github.com/kasturikhanke/generative-loaders/issues/new/choose).
 
 ## License
 

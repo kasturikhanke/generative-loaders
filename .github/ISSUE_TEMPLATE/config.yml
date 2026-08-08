@@ -4,5 +4,5 @@ contact_links:
     url: https://github.com/kasturikhanke/generative-loaders/security/advisories/new
     about: Report security issues privately instead of opening a public issue.
   - name: Documentation
-    url: https://progress-narrative.kkasturi2502.chatgpt.site/docs
+    url: https://generativeloaders.com/docs
     about: Read integration examples, API details, and troubleshooting guidance.

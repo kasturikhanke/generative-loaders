@@ -2,7 +2,7 @@
 
 Accessible React loading states designed for generative interfaces: sixteen animated text reveals, fourteen compact activity indicators, and nine image-generation placeholders.
 
-[Live gallery](https://progress-narrative.kkasturi2502.chatgpt.site) · [Documentation](https://progress-narrative.kkasturi2502.chatgpt.site/docs) · [GitHub](https://github.com/kasturikhanke/generative-loaders) · [Report an issue](https://github.com/kasturikhanke/generative-loaders/issues/new/choose)
+[Live gallery](https://generativeloaders.com) · [Documentation](https://generativeloaders.com/docs) · [GitHub](https://github.com/kasturikhanke/generative-loaders) · [Report an issue](https://github.com/kasturikhanke/generative-loaders/issues/new/choose)
 
 ## Install
 
@@ -74,7 +74,7 @@ All prop and variant types are exported from the package root.
 - Stable SSR markup and append-aware text updates.
 - Safe fallback for invalid speed values.
 
-Read the [complete documentation](https://progress-narrative.kkasturi2502.chatgpt.site/docs) for integration examples and troubleshooting.
+Read the [complete documentation](https://generativeloaders.com/docs) for integration examples and troubleshooting.
 
 ## License
 
