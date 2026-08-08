@@ -140,10 +140,18 @@ a { color:inherit; }
 :root[data-theme="dark"] .gallery-home { --bg:#0d0e10; --surface:#151619; --surface-soft:#111215; --control:#202226; --control-active:#2b2d32; --ink:#f4f4f5; --muted:#aaaeb6; --soft:#858a94; --line:#2c2e33; --accent:#f4f4f5; --button-ink:#111; --focus:#303239; color-scheme:dark; }
 .gallery-home-content { padding:68px 24px 24px; }
 .gallery-home-content>.gallery { width:100%; display:block; }
-.homepage-view-toggle { width:max-content; margin:0 auto 24px; }
-.homepage-view-toggle button { min-width:92px; }
+.homepage-intro { margin:0 auto 20px; text-align:center; }
+.homepage-intro h1 { margin:0; font-size:clamp(22px,2.2vw,30px); font-weight:620; line-height:1.1; letter-spacing:-.045em; }
+.homepage-view-toggle { width:max-content; display:flex; align-items:center; margin:0 auto 28px; }
+.homepage-view-toggle button { position:relative; min-width:92px; height:38px; padding:0 17px; border:0; background:transparent; color:var(--soft); font-size:13px; font-weight:620; letter-spacing:-.02em; cursor:pointer; transition:color .18s ease; }
+.homepage-view-toggle button+button { border-left:1px solid var(--line); }
+.homepage-view-toggle button:hover { color:var(--ink); }
+.homepage-view-toggle button::after { content:""; position:absolute; right:17px; bottom:2px; left:17px; height:1px; background:var(--ink); transform:scaleX(0); transition:transform .22s cubic-bezier(.22,1,.36,1); }
+.homepage-view-toggle button.active { color:var(--ink); }
+.homepage-view-toggle button.active::after { transform:scaleX(1); }
 .homepage-install { margin:0 auto 24px; }
 .in-use-panel .context-sidebar { border-bottom:1px solid var(--line); }
+.in-use-panel .context-sidebar>.playback-controls { margin-right:14px; }
 .in-use-panel .image-demo-stage>.iml-loader { display:grid; }
 .gallery-home>.footer-editorial { margin-top:84px; }
 .context-panel { overflow:hidden; display:grid; grid-template-columns:1fr; border:1px solid var(--line); border-radius:16px; background:var(--surface); box-shadow:0 18px 60px rgb(0 0 0 / .04); }
@@ -429,6 +437,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible 
   .context-tabs { width:calc(100% - 16px); flex-direction:row; }
   .context-tabs button { flex:1; justify-content:center; }
   .context-sidebar>.playback-controls { justify-self:center; margin:0 0 8px; }
+  .in-use-panel .context-sidebar>.playback-controls { margin:0 0 8px; }
   .playback-controls fieldset { margin:0; }
   .playback-actions { align-self:end; }
   .context-stage { padding:14px; }

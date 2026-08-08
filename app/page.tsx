@@ -404,14 +404,18 @@ export default function Home() {
     </nav>
 
     <div className="gallery-home-content">
-      <div className="segmented-control homepage-view-toggle" role="tablist" aria-label="Homepage view">
-        <button type="button" role="tab" aria-selected={view === "loaders"} className={view === "loaders" ? "active" : ""} onClick={() => setView("loaders")}>Loaders</button>
-        <button type="button" role="tab" aria-selected={view === "in-use"} className={view === "in-use" ? "active" : ""} onClick={() => { setView("in-use"); restart(); }}>In Use</button>
-      </div>
+      <header className="homepage-intro">
+        <h1>React loaders for generative UI.</h1>
+      </header>
 
       <div className="install-command homepage-install" aria-label="Install Generative Loaders from npm">
         <code>{installCommand}</code>
         <CopyButton value={installCommand} />
+      </div>
+
+      <div className="homepage-view-toggle" role="tablist" aria-label="Homepage view">
+        <button type="button" role="tab" aria-selected={view === "loaders"} className={view === "loaders" ? "active" : ""} onClick={() => setView("loaders")}>Loaders</button>
+        <button type="button" role="tab" aria-selected={view === "in-use"} className={view === "in-use" ? "active" : ""} onClick={() => { setView("in-use"); restart(); }}>In Use</button>
       </div>
 
       <div id="loaders">
@@ -422,7 +426,7 @@ export default function Home() {
           <button type="button" role="tab" aria-selected={collection === "inline"} className={collection === "inline" ? "active" : ""} onClick={() => selectCollection("inline")}>Inline loaders <span>{String(inlineLoaders.length).padStart(2, "0")}</span></button>
           <button type="button" role="tab" aria-selected={collection === "image"} className={collection === "image" ? "active" : ""} onClick={() => selectCollection("image")}>Image loaders <span>{String(imageLoaders.length).padStart(2, "0")}</span></button>
         </div>
-        <h1 id="gallery-title" className="sr-only">{collection === "text" ? "Text loaders" : collection === "inline" ? "Inline loaders" : "Image loaders"}</h1>
+        <h2 id="gallery-title" className="sr-only">{collection === "text" ? "Text loaders" : collection === "inline" ? "Inline loaders" : "Image loaders"}</h2>
         <PlaybackControls paused={paused} speed={speed} onPauseToggle={() => setPaused((value) => !value)} onRestart={restart} onSpeedChange={setPlaybackSpeed} />
       </div>
 
