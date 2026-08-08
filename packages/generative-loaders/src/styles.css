@@ -429,19 +429,19 @@
 @keyframes iml-focus-core { 0%,14%,100% { opacity:.08; transform:scale(.72); } 48%,76% { opacity:.62; transform:scale(1); } }
 
 .iml-shutter { inset:7%!important; overflow:hidden; border:1px solid color-mix(in srgb,currentColor 18%,transparent); }
-.iml-shutter i { top:0; bottom:0; width:52%; background:color-mix(in srgb,currentColor 64%,transparent); animation:iml-shutter var(--iml-duration) cubic-bezier(.65,0,.35,1) infinite; }
+.iml-shutter i { top:0; bottom:0; width:50%; background:color-mix(in srgb,currentColor 64%,transparent); animation:iml-shutter var(--iml-duration) cubic-bezier(.65,0,.35,1) infinite; }
 .iml-shutter i:nth-child(1) { left:0; transform-origin:left; }
 .iml-shutter i:nth-child(2) { right:0; transform-origin:right; }
-.iml-shutter b { left:49.5%; top:0; bottom:0; width:1%; background:color-mix(in srgb,currentColor 35%,transparent); }
+.iml-shutter b { left:calc(50% - .5px); top:0; bottom:0; width:1px; background:color-mix(in srgb,currentColor 35%,transparent); }
 .iml-shutter em { inset:13%; border:1px solid color-mix(in srgb,currentColor 42%,transparent); animation:iml-shutter-mark var(--iml-duration) ease-in-out infinite; }
 @keyframes iml-shutter { 0%,14%,100% { opacity:.1; transform:scaleX(.72); } 46%,76% { opacity:.68; transform:scaleX(1); } }
 @keyframes iml-shutter-mark { 0%,14%,100% { opacity:.06; transform:scale(.94); } 48%,76% { opacity:.42; transform:scale(1); } }
 
 .iml-contour i { width:35%; height:35%; border-color:currentColor; border-style:solid; animation:iml-contour var(--iml-duration) cubic-bezier(.22,1,.36,1) infinite; }
 .iml-contour i:nth-child(1) { left:8%; top:8%; border-width:2px 0 0 2px; }
-.iml-contour i:nth-child(2) { right:8%; top:8%; border-width:2px 2px 0 0; animation-delay:calc(var(--iml-duration) * -.05); }
-.iml-contour i:nth-child(3) { right:8%; bottom:8%; border-width:0 2px 2px 0; animation-delay:calc(var(--iml-duration) * -.1); }
-.iml-contour i:nth-child(4) { left:8%; bottom:8%; border-width:0 0 2px 2px; animation-delay:calc(var(--iml-duration) * -.15); }
+.iml-contour i:nth-child(2) { right:8%; top:8%; border-width:2px 2px 0 0; }
+.iml-contour i:nth-child(3) { right:8%; bottom:8%; border-width:0 2px 2px 0; }
+.iml-contour i:nth-child(4) { left:8%; bottom:8%; border-width:0 0 2px 2px; }
 .iml-contour b { inset:24%; background:color-mix(in srgb,currentColor 58%,transparent); animation:iml-contour-core var(--iml-duration) cubic-bezier(.65,0,.35,1) infinite; }
 @keyframes iml-contour { 0%,14%,100% { opacity:.08; transform:scale(.86); } 46%,76% { opacity:.64; transform:scale(1); } }
 @keyframes iml-contour-core { 0%,14%,100% { opacity:.04; transform:scale(.72); } 48%,76% { opacity:.54; transform:scale(1); } }

@@ -132,24 +132,26 @@ function ImageLoaderDemo({ variant, color, speed, paused }: { variant: ImageLoad
   const [phase, setPhase] = useState<"loading" | "resolving" | "loaded">("loading");
   const reduceMotion = Boolean(useReducedMotion());
   const visiblePhase = reduceMotion ? "loaded" : phase;
+  const isDirectionalResolve = variant === "shutter" || variant === "contour";
+  const resolveDuration = isDirectionalResolve ? 1.15 : 1.05;
 
   useEffect(() => {
     if (paused || reduceMotion) return;
     const nextPhase = phase === "loading" ? "resolving" : phase === "resolving" ? "loaded" : "loading";
-    const phaseDuration = phase === "loading" ? 2300 : phase === "resolving" ? 1050 : 1800;
+    const phaseDuration = phase === "loading" ? (isDirectionalResolve ? 2350 : 2300) : phase === "resolving" ? resolveDuration * 1000 : 1800;
     const timer = window.setTimeout(
       () => setPhase(nextPhase),
       phaseDuration / speed,
     );
     return () => window.clearTimeout(timer);
-  }, [paused, phase, reduceMotion, speed]);
+  }, [isDirectionalResolve, paused, phase, reduceMotion, resolveDuration, speed]);
 
   return <span className="image-demo-stage" data-phase={visiblePhase} data-paused={paused ? "true" : "false"} data-variant={variant}>
     <AnimatePresence initial={false} mode="sync">
-      {visiblePhase === "loading" && <motion.span className="image-loader-layer" key="loader" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, scale: .99 }} transition={{ duration: .3 / speed, ease: [0.65, 0, 0.35, 1] }}>
+      {visiblePhase === "loading" && <motion.span className="image-loader-layer" key="loader" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, scale: isDirectionalResolve ? 1 : .99 }} transition={{ duration: (isDirectionalResolve ? .22 : .3) / speed, ease: [0.65, 0, 0.35, 1] }}>
         <ImageLoader variant={variant} size="100%" speed={speed} color={color} paused={paused} label={`${variant} image generation`} />
       </motion.span>}
-      {visiblePhase === "resolving" && <motion.span className={`image-resolve-layer image-resolve-layer-${variant}`} key="resolving" role="status" aria-label="Resolving image" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: .16 / speed }} style={{ "--resolve-duration": `${1.05 / speed}s` } as React.CSSProperties}>
+      {visiblePhase === "resolving" && <motion.span className={`image-resolve-layer image-resolve-layer-${variant}`} key="resolving" role="status" aria-label="Resolving image" initial={{ opacity: isDirectionalResolve ? 1 : 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: (isDirectionalResolve ? .1 : .16) / speed }} style={{ "--resolve-duration": `${resolveDuration / speed}s` } as React.CSSProperties}>
         <ImageResolveVisual variant={variant} />
       </motion.span>}
     </AnimatePresence>
@@ -167,39 +169,27 @@ function ImageLoaderDemo({ variant, color, speed, paused }: { variant: ImageLoad
 
 function SiteFooter() {
   const reduceMotion = Boolean(useReducedMotion());
-  const wordmarkVariants = reduceMotion
-    ? { hidden: { opacity: 1, y: 0 }, visible: { opacity: 1, y: 0 } }
-    : { hidden: { opacity: 0, y: "105%" }, visible: { opacity: 1, y: 0 } };
 
   return <footer className="footer-editorial">
     <div className="footer-editorial-inner shell">
-      <motion.div
-        className="footer-editorial-intro"
-        initial={reduceMotion ? false : { opacity: 0, y: 12 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: .7 }}
-        transition={{ duration: .55, ease: [0.22, 1, 0.36, 1] }}
-      >
-        <p>Thoughtful waiting states<br />for generative products.</p>
+      <div className="footer-editorial-intro">
         <nav aria-label="Footer resources"><a href="#contexts">Examples</a><a href="#loaders">Loaders</a><a href="/docs">Documentation</a></nav>
-      </motion.div>
+      </div>
 
-      <motion.div className="footer-wordmark" aria-label="Generative Loaders" initial="hidden" whileInView="visible" viewport={{ once: true, amount: .25 }}>
-        <span className="footer-wordmark-note">Animated React components</span>
-        <span className="footer-wordmark-mask">
-          <motion.span className="footer-wordmark-word" variants={wordmarkVariants} transition={{ delay: .06, duration: .9, ease: [0.16, 1, 0.3, 1] }}>Generative</motion.span>
-        </span>
-        <span className="footer-wordmark-mask footer-wordmark-mask-last">
-          <motion.span className="footer-wordmark-word" variants={wordmarkVariants} transition={{ delay: .14, duration: .9, ease: [0.16, 1, 0.3, 1] }}>Loaders</motion.span>
-          <motion.i className="footer-wordmark-dot" aria-hidden="true" animate={reduceMotion ? undefined : { scale: [1, .65, 1], opacity: [1, .45, 1] }} transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }} />
-        </span>
+      <motion.div
+        className="footer-wordmark"
+        aria-label="Generative Loaders"
+        initial={reduceMotion ? false : { opacity: 0, y: 18 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: .25 }}
+        transition={{ duration: .7, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <span className="footer-wordmark-word">Generative</span>
+        <span className="footer-wordmark-word">Loaders</span>
       </motion.div>
 
       <div className="footer-editorial-meta">
         <p>© 2026 Generative Loaders — MIT licensed</p>
-        <div className="footer-signal" aria-hidden="true">
-          {[0, 1, 2, 3, 4].map((index) => <motion.i key={index} animate={reduceMotion ? undefined : { scaleY: [.35, 1, .35] }} transition={{ duration: .85, delay: index * .09, repeat: Infinity, ease: "easeInOut" }} />)}
-        </div>
         <nav aria-label="Footer links"><a href="https://github.com/kasturikhanke/generative-loaders">GitHub ↗</a><a href="/docs">Docs</a><a href="#top">Back to top ↑</a></nav>
       </div>
     </div>
