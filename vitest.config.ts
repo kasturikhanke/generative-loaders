@@ -4,6 +4,6 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     setupFiles: ["./vitest.setup.ts"],
-    include: ["packages/progress-narrative/tests/**/*.test.{ts,tsx}"],
+    include: ["packages/generative-loaders/tests/**/*.test.{ts,tsx}"],
   },
 });

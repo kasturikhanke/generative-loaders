@@ -1,204 +1,319 @@
 "use client";
 
-import { AnimatePresence, LayoutGroup, motion, useReducedMotion } from "framer-motion";
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { ImageLoader, InlineLoader, TextLoader, type ImageLoaderVariant, type InlineLoaderVariant, type TextLoaderVariant } from "generative-loaders";
+import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useMemo, useState } from "react";
 
-type Variation =
-  | "orbit" | "wave" | "drift" | "scan" | "cascade" | "thread"
-  | "bloom" | "shuffle" | "constellation" | "flip" | "ticker" | "focus";
+const sampleText = "Ideas arrive quietly,\nthen become something clear.";
 
-const states = [
-  { label: "Searching 18 sources", detail: "Finding relevant context" },
-  { label: "Reading 6 documents", detail: "Extracting useful details" },
-  { label: "Comparing 12 patterns", detail: "Resolving the differences" },
-  { label: "Drafting your answer", detail: "Putting it all together" },
+const loaders: Array<{ id: TextLoaderVariant; name: string }> = [
+  { id: "decode", name: "Decode" },
+  { id: "typewriter", name: "Typewriter" },
+  { id: "skeleton", name: "Skeleton" },
+  { id: "cascade", name: "Cascade" },
+  { id: "focus", name: "Focus" },
+  { id: "wipe", name: "Wipe" },
+  { id: "flip", name: "Flip" },
+  { id: "redact", name: "Redact" },
+  { id: "line", name: "Line by line" },
+  { id: "terminal", name: "Terminal" },
+  { id: "wave", name: "Wave" },
+  { id: "dissolve", name: "Dissolve" },
+  { id: "slice", name: "Slice" },
+  { id: "tracking", name: "Tracking" },
+  { id: "coalesce", name: "Coalesce" },
+  { id: "fragments", name: "Fragments" },
 ];
 
-const variations: Array<{ id: Variation; name: string; feel: string; color: string }> = [
-  { id: "orbit", name: "Orbit", feel: "Calm", color: "#7357e8" },
-  { id: "wave", name: "Wave", feel: "Fluid", color: "#1677ff" },
-  { id: "drift", name: "Drift", feel: "Ambient", color: "#e05a8f" },
-  { id: "scan", name: "Scan", feel: "Precise", color: "#00a17a" },
-  { id: "cascade", name: "Cascade", feel: "Expressive", color: "#ed7c21" },
-  { id: "thread", name: "Thread", feel: "Sequential", color: "#2176d2" },
-  { id: "bloom", name: "Bloom", feel: "Soft", color: "#d85186" },
-  { id: "shuffle", name: "Shuffle", feel: "Playful", color: "#7659dc" },
-  { id: "constellation", name: "Constellation", feel: "Intelligent", color: "#1a8f70" },
-  { id: "flip", name: "Flip", feel: "Direct", color: "#e36c2f" },
-  { id: "ticker", name: "Ticker", feel: "Measured", color: "#2376d8" },
-  { id: "focus", name: "Focus", feel: "Minimal", color: "#7559d9" },
+const inlineLoaders: Array<{ id: InlineLoaderVariant; name: string; copy: string }> = [
+  { id: "glyph", name: "Glyph", copy: "Finding the right shape…" },
+  { id: "matrix", name: "Matrix", copy: "Mapping the response…" },
+  { id: "orbit", name: "Orbit", copy: "Gathering context…" },
+  { id: "ripple", name: "Ripple", copy: "Thinking this through…" },
+  { id: "signal", name: "Signal", copy: "Reading the details…" },
+  { id: "spark", name: "Spark", copy: "Composing an answer…" },
+  { id: "rotor", name: "Rotor", copy: "Spinning up an idea…" },
+  { id: "pixel-drift", name: "Pixel drift", copy: "Resolving the picture…" },
+  { id: "chomp", name: "Chomp", copy: "Working through the queue…" },
+  { id: "snake", name: "Snake", copy: "Following the thread…" },
+  { id: "fold", name: "Fold", copy: "Turning this over…" },
+  { id: "gravity", name: "Gravity", copy: "Drawing signals inward…" },
+  { id: "domino", name: "Domino", copy: "Setting things in motion…" },
+  { id: "aperture", name: "Aperture", copy: "Bringing it into focus…" },
 ];
 
-const spring = { type: "spring" as const, stiffness: 360, damping: 28 };
+const imageLoaders: Array<{ id: ImageLoaderVariant; name: string }> = [
+  { id: "skeleton", name: "Skeleton" },
+  { id: "bands", name: "Bands" },
+  { id: "tiles", name: "Tiles" },
+  { id: "scan", name: "Scan" },
+  { id: "pixel-grid", name: "Pixel grid" },
+  { id: "resolution", name: "Resolution" },
+  { id: "focus", name: "Focus" },
+  { id: "shutter", name: "Shutter" },
+  { id: "contour", name: "Contour" },
+];
 
-function CopyButton({ value, compact = false }: { value: string; compact?: boolean }) {
+const resolveCells = Array.from({ length: 16 }, (_, index) => ({
+  index,
+  x: index % 4,
+  y: Math.floor(index / 4),
+}));
+
+const speeds = [0.75, 1, 1.5];
+const spring = { type: "spring" as const, stiffness: 340, damping: 30 };
+
+type Theme = "light" | "dark";
+
+function ThemeIcon({ theme }: { theme: Theme }) {
+  return theme === "dark" ? <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20.2 15.7A8.5 8.5 0 0 1 8.3 3.8 8.5 8.5 0 1 0 20.2 15.7Z" /></svg> : <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.5" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>;
+}
+
+function CopyButton({ value }: { value: string }) {
   const [copied, setCopied] = useState(false);
   async function copy() {
     await navigator.clipboard.writeText(value);
     setCopied(true);
-    window.setTimeout(() => setCopied(false), 1200);
+    window.setTimeout(() => setCopied(false), 1300);
   }
-  return (
-    <motion.button className={compact ? "copy compact" : "copy"} type="button" onClick={copy} whileTap={{ scale: .94 }} transition={spring}>
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.span key={copied ? "done" : "copy"} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: .14 }}>
-          {copied ? "Copied ✓" : "Copy"}
-        </motion.span>
-      </AnimatePresence>
-    </motion.button>
-  );
+  return <motion.button className="copy-button" type="button" onClick={copy} whileTap={{ scale: .95 }}><AnimatePresence mode="wait" initial={false}><motion.span key={copied ? "copied" : "copy"} initial={{ opacity: 0, y: 3 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -3 }} transition={{ duration: .13 }}>{copied ? "Copied ✓" : "Copy"}</motion.span></AnimatePresence></motion.button>;
 }
 
-function Loader({ type, color, duration, paused }: { type: Variation; color: string; duration: number; paused: boolean }) {
-  const reduceMotion = useReducedMotion();
-  const d = reduceMotion || paused ? 0 : duration;
-  const infinite = { repeat: d ? Infinity : 0, duration: d || .01, ease: "easeInOut" as const };
-
-  if (type === "orbit") return (
-    <span className="loader orbit-loader">
-      {[0, 1, 2].map((i) => <motion.i key={i} style={{ color }} animate={{ rotate: d ? 360 : 0 }} transition={{ repeat: d ? Infinity : 0, duration: d * (1 + i * .22) || .01, ease: "linear", delay: -i * .35 }}><b /></motion.i>)}
-      <motion.em style={{ background: color }} animate={{ scale: d ? [1, .72, 1] : 1 }} transition={infinite} />
-    </span>
-  );
-
-  if (type === "wave") return (
-    <span className="loader wave-loader">{[0, 1, 2, 3, 4, 5, 6].map((i) => <motion.i key={i} style={{ background: color }} animate={{ scaleY: d ? [.32, 1, .32] : .65, opacity: d ? [.35, 1, .35] : .7 }} transition={{ ...infinite, delay: i * .07 }} />)}</span>
-  );
-
-  if (type === "drift") return (
-    <motion.span className="loader drift-loader" animate={{ rotate: d ? 360 : 0 }} transition={{ repeat: d ? Infinity : 0, duration: d * 3 || .01, ease: "linear" }}>
-      {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((i) => <motion.i key={i} style={{ background: i === 4 ? color : undefined, left: `${12 + (i * 23) % 65}%`, top: `${10 + (i * 31) % 70}%` }} animate={{ x: d ? [0, (i % 3 - 1) * 7, 0] : 0, y: d ? [0, ((i + 1) % 3 - 1) * 6, 0] : 0, scale: d ? [.65, 1.2, .65] : 1 }} transition={{ ...infinite, delay: i * .06 }} />)}
-    </motion.span>
-  );
-
-  if (type === "scan") return (
-    <span className="loader scan-loader"><i /><motion.b style={{ background: color, boxShadow: `0 0 10px ${color}` }} animate={{ y: d ? [-13, 13, -13] : 0 }} transition={infinite} /><motion.em animate={{ opacity: d ? [.2, .9, .2] : .6 }} transition={infinite} /></span>
-  );
-
-  if (type === "cascade") return (
-    <span className="loader cascade-loader">{[.55, .9, .7, 1].map((width, i) => <motion.i key={i} style={{ width: `${width * 30}px`, background: i === 1 ? color : undefined }} animate={{ scaleX: d ? [.18, 1, .18] : 1, opacity: d ? [.25, 1, .25] : .75 }} transition={{ ...infinite, delay: i * .12 }} />)}</span>
-  );
-
-  if (type === "thread") return (
-    <span className="loader thread-loader"><motion.b style={{ background: color }} animate={{ scaleX: d ? [0, 1, 1, 0] : 1 }} transition={infinite} />{[0, 1, 2].map((i) => <motion.i key={i} style={{ borderColor: color }} animate={{ backgroundColor: d ? ["#fff", color, "#fff"] : color, scale: d ? [1, 1.35, 1] : 1 }} transition={{ ...infinite, delay: i * .22 }} />)}</span>
-  );
-
-  if (type === "bloom") return (
-    <span className="loader bloom-loader"><motion.b style={{ background: color }} animate={{ scale: d ? [1, .72, 1] : 1 }} transition={infinite} />{[0, 1, 2].map((i) => <motion.i key={i} style={{ borderColor: color }} animate={{ scale: d ? [.3, 2.5] : 1, opacity: d ? [.65, 0] : .2 }} transition={{ repeat: d ? Infinity : 0, duration: d || .01, ease: "easeOut", delay: i * (d / 3) }} />)}</span>
-  );
-
-  if (type === "shuffle") return (
-    <span className="loader shuffle-loader">{[0,1,2,3,4,5,6,7,8].map((i) => <motion.i key={i} layout style={{ background: i === 4 ? color : undefined }} animate={{ x: d ? [0, (i % 2 ? 3 : -3), 0] : 0, y: d ? [0, (i % 3 - 1) * 4, 0] : 0, rotate: d ? [0, i % 2 ? 20 : -20, 0] : 0 }} transition={{ ...infinite, delay: i * .05 }} />)}</span>
-  );
-
-  if (type === "constellation") return (
-    <span className="loader constellation-loader"><i className="line one" /><i className="line two" />{[0,1,2,3,4,5].map((i) => <motion.b key={i} style={{ background: i === 3 ? color : undefined }} animate={{ scale: d ? [.65, 1.45, .65] : 1, opacity: d ? [.4, 1, .4] : .8 }} transition={{ ...infinite, delay: i * .13 }} />)}</span>
-  );
-
-  if (type === "flip") return (
-    <span className="loader flip-loader">{["01", "02", "03"].map((number, i) => <motion.i key={number} style={{ color: i === 1 ? color : undefined }} animate={{ rotateX: d ? [-90, 0, 90] : 0, opacity: d ? [0, 1, 0] : i === 1 ? 1 : 0 }} transition={{ repeat: d ? Infinity : 0, duration: d || .01, times: [0, .25, .55], delay: i * (d / 3), ease: "easeInOut" }}>{number}</motion.i>)}</span>
-  );
-
-  if (type === "ticker") return (
-    <span className="loader ticker-loader">{[0,1,2,3,4,5,6,7].map((i) => <motion.i key={i} animate={{ backgroundColor: d ? ["#e5e7eb", color, "#e5e7eb"] : i < 5 ? color : "#e5e7eb", scaleY: d ? [.62, 1, .62] : 1 }} transition={{ ...infinite, delay: i * .11 }} />)}</span>
-  );
-
-  return (
-    <span className="loader focus-loader"><motion.b style={{ background: color }} animate={{ scale: d ? [.65, 1, .65] : 1, filter: d ? ["blur(4px)", "blur(0px)", "blur(4px)"] : "blur(0px)" }} transition={infinite} />{[0,1,2].map((i) => <motion.i key={i} style={{ borderColor: color }} animate={{ scale: d ? [.78, 1.04, .78] : 1, opacity: d ? [.15, .55, .15] : .35 }} transition={{ ...infinite, delay: i * .12 }} />)}</span>
-  );
-}
-
-function textMotion(type: Variation) {
-  if (type === "scan") return { initial: { opacity: 0, clipPath: "inset(0 100% 0 0)" }, animate: { opacity: 1, clipPath: "inset(0 0% 0 0)" }, exit: { opacity: 0, clipPath: "inset(0 0 0 100%)" } };
-  if (type === "flip") return { initial: { opacity: 0, rotateX: -75, y: 8 }, animate: { opacity: 1, rotateX: 0, y: 0 }, exit: { opacity: 0, rotateX: 75, y: -8 } };
-  if (type === "focus") return { initial: { opacity: 0, filter: "blur(8px)", scale: .97 }, animate: { opacity: 1, filter: "blur(0px)", scale: 1 }, exit: { opacity: 0, filter: "blur(8px)", scale: 1.02 } };
-  if (type === "cascade") return { initial: { opacity: 0, x: -12 }, animate: { opacity: 1, x: 0 }, exit: { opacity: 0, x: 12 } };
-  return { initial: { opacity: 0, y: 8 }, animate: { opacity: 1, y: 0 }, exit: { opacity: 0, y: -8 } };
-}
-
-function ThinkingPill({ variation, stateIndex, duration, paused, large = false }: { variation: (typeof variations)[number]; stateIndex: number; duration: number; paused: boolean; large?: boolean }) {
-  const state = states[stateIndex];
-  const text = textMotion(variation.id);
-  return (
-    <motion.div className={`thinking-pill${large ? " large" : ""}`} layout transition={spring} style={{ "--accent": variation.color } as CSSProperties} whileHover={{ scale: large ? 1.015 : 1.025 }}>
-      <Loader type={variation.id} color={variation.color} duration={duration} paused={paused} />
-      <span className="status-copy">
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.strong key={`${variation.id}-${stateIndex}`} initial={text.initial} animate={text.animate} exit={text.exit} transition={{ duration: .36, ease: [0.22, 1, 0.36, 1] }}>{state.label}</motion.strong>
-        </AnimatePresence>
-        {large ? <motion.small layout>{state.detail}</motion.small> : null}
-      </span>
-    </motion.div>
-  );
-}
-
-export default function Home() {
-  const [stateIndex, setStateIndex] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const [speed, setSpeed] = useState(1);
-  const [selected, setSelected] = useState<Variation>("orbit");
-  const duration = 1.8 / speed;
+function StreamingDemo({ text, variant, color, speed, paused, phase = 0 }: { text: string; variant: TextLoaderVariant; color: string; speed: number; paused: boolean; phase?: number }) {
+  const chunks = useMemo(() => text.match(/\S+\s*/g) ?? [], [text]);
+  const [received, setReceived] = useState(0);
+  const [fading, setFading] = useState(false);
+  const [started, setStarted] = useState(false);
 
   useEffect(() => {
     if (paused) return;
-    const timer = window.setInterval(() => setStateIndex((value) => (value + 1) % states.length), 2200 / speed);
-    return () => window.clearInterval(timer);
-  }, [paused, speed]);
+    const complete = received >= chunks.length;
+    const timer = window.setTimeout(() => {
+      if (fading) {
+        setReceived(0);
+        setFading(false);
+      } else if (complete) {
+        setFading(true);
+      } else {
+        setStarted(true);
+        setReceived(received + 1);
+      }
+    }, fading ? 240 : complete ? 1000 : 320 / speed + (started ? 0 : phase));
+    return () => window.clearTimeout(timer);
+  }, [chunks.length, fading, paused, phase, received, speed, started]);
 
-  const selectedVariation = useMemo(() => variations.find((item) => item.id === selected) ?? variations[0], [selected]);
-  const install = "npm install progress-narrative";
-  const code = `<ProgressNarrative\n  variation="${selected}"\n  events={events}\n/>`;
+  const receivedText = variant === "skeleton"
+    ? (received >= chunks.length ? chunks.join("") : "")
+    : chunks.slice(0, received).join("");
 
-  return (
-    <LayoutGroup>
-      <main>
-        <nav className="nav">
-          <a className="brand" href="#top"><motion.span layoutId="brand-dot" />Progress Narrative</a>
-          <div><a href="#variations">Variations</a><a href="#playground">Playground</a><a href="#install">Install</a></div>
-          <a className="github" href="#install">Get started <span>↗</span></a>
-        </nav>
+  return <motion.span className="stream-demo-frame" animate={{ opacity: fading ? 0 : 1 }} transition={{ duration: .24, ease: [0.22, 0.65, 0.3, 1] }}><TextLoader text={receivedText} variant={variant} color={color} speed={speed} paused={paused} /></motion.span>;
+}
 
-        <header className="hero" id="top">
-          <motion.div className="package-badge" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .1, ...spring }}>React component · 12 motion styles</motion.div>
-          <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .16, ...spring }}>Thinking steps,<br /><span>beautifully animated.</span></motion.h1>
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: .28, duration: .4 }}>A tiny React library for showing clear, polished progress while agents work.</motion.p>
-          <motion.div className="install-inline" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .34, ...spring }}><code>{install}</code><CopyButton value={install} compact /></motion.div>
-        </header>
+function ImageResolveVisual({ variant }: { variant: ImageLoaderVariant }) {
+  if (variant === "skeleton") return <span className="image-resolve-preview" />;
+  if (variant === "bands") return <span className="image-resolve-bands">{Array.from({ length: 3 }, (_, index) => <i key={index} style={{ "--resolve-i": index, "--resolve-position": `${index * 50}%` } as React.CSSProperties} />)}</span>;
+  if (variant === "tiles" || variant === "pixel-grid") return <span className={`image-resolve-${variant}`}>{resolveCells.map(({ index, x, y }) => <i key={index} style={{ "--resolve-x": x, "--resolve-y": y, "--resolve-position-x": `${x * 33.333}%`, "--resolve-position-y": `${y * 33.333}%`, "--resolve-delay": `${(x + y) * .045}s` } as React.CSSProperties} />)}</span>;
+  if (variant === "scan") return <span className="image-resolve-scan"><i /><b /></span>;
+  if (variant === "resolution") return <span className="image-resolve-resolution"><i /><i /><b /></span>;
+  if (variant === "focus") return <span className="image-resolve-focus" />;
+  if (variant === "shutter") return <span className="image-resolve-shutter"><i /><i /></span>;
+  return <span className="image-resolve-contour"><i />{Array.from({ length: 4 }, (_, index) => <b key={index} />)}</span>;
+}
 
-        <section className="toolbar" aria-label="Animation controls">
-          <div><span>12 variations</span><small>One component, twelve motion directions.</small></div>
-          <div className="toolbar-actions">
-            <motion.button type="button" onClick={() => setPaused((value) => !value)} whileTap={{ scale: .94 }}>{paused ? "▶ Play" : "Ⅱ Pause"}</motion.button>
-            <span />
-            {[.75, 1, 1.5].map((value) => <motion.button key={value} className={speed === value ? "active" : ""} type="button" onClick={() => setSpeed(value)} whileTap={{ scale: .92 }}>{value}×</motion.button>)}
-          </div>
-        </section>
+function ImageLoaderDemo({ variant, color, speed, paused }: { variant: ImageLoaderVariant; color: string; speed: number; paused: boolean }) {
+  const [phase, setPhase] = useState<"loading" | "resolving" | "loaded">("loading");
 
-        <section className="grid" id="variations" aria-label="Thinking animation variations">
-          {variations.map((variation, index) => (
-            <motion.article key={variation.id} className={selected === variation.id ? "card selected" : "card"} onClick={() => setSelected(variation.id)} initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: .15 }} transition={{ delay: (index % 3) * .05, ...spring }} whileHover={{ y: -4, boxShadow: "0 16px 40px rgba(30,34,45,.08)" }}>
-              <header><span>{String(index + 1).padStart(2, "0")}</span><strong>{variation.name}</strong><small>{variation.feel}</small></header>
-              <div className="demo"><ThinkingPill variation={variation} stateIndex={stateIndex} duration={duration} paused={paused} /></div>
-              <footer><span style={{ background: variation.color }} />Click to customize <i>↗</i></footer>
-            </motion.article>
-          ))}
-        </section>
+  useEffect(() => {
+    if (paused) return;
+    const nextPhase = phase === "loading" ? "resolving" : phase === "resolving" ? "loaded" : "loading";
+    const phaseDuration = phase === "loading" ? 2300 : phase === "resolving" ? 1050 : 1800;
+    const timer = window.setTimeout(
+      () => setPhase(nextPhase),
+      phaseDuration / speed,
+    );
+    return () => window.clearTimeout(timer);
+  }, [paused, phase, speed]);
 
-        <section className="playground" id="playground">
-          <div className="section-head"><div><span>Playground</span><h2>Try every state.</h2></div><p>Pick a variation, change the operation, and adjust the pace. Everything is driven by Framer Motion.</p></div>
-          <div className="playground-box">
-            <div className="controls">
-              <label>Variation</label><div>{variations.map((variation) => <motion.button layout type="button" key={variation.id} className={selected === variation.id ? "active" : ""} onClick={() => setSelected(variation.id)} whileTap={{ scale: .94 }}>{selected === variation.id ? <motion.span layoutId="active-pill" /> : null}{variation.name}</motion.button>)}</div>
-              <label>Step</label><div>{states.map((state, index) => <motion.button type="button" key={state.label} className={stateIndex === index ? "active" : ""} onClick={() => { setStateIndex(index); setPaused(true); }} whileTap={{ scale: .94 }}>{state.label.split(" ")[0]}</motion.button>)}</div>
-            </div>
-            <div className="preview"><ThinkingPill variation={selectedVariation} stateIndex={stateIndex} duration={duration} paused={paused} large /><p><span style={{ background: selectedVariation.color }} />{selectedVariation.name} · {selectedVariation.feel}</p></div>
-            <div className="usage"><div><span>Usage</span><CopyButton value={code} compact /></div><pre><code>{code}</code></pre></div>
-          </div>
-        </section>
+  return <span className="image-demo-stage" data-phase={phase} data-paused={paused ? "true" : "false"} data-variant={variant}>
+    <AnimatePresence initial={false} mode="sync">
+      {phase === "loading" && <motion.span className="image-loader-layer" key="loader" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, scale: .99 }} transition={{ duration: .3 / speed, ease: [0.65, 0, 0.35, 1] }}>
+        <ImageLoader variant={variant} size="100%" speed={speed} color={color} paused={paused} label={`${variant} image generation`} />
+      </motion.span>}
+      {phase === "resolving" && <motion.span className={`image-resolve-layer image-resolve-layer-${variant}`} key="resolving" role="status" aria-label="Resolving image" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: .16 / speed }} style={{ "--resolve-duration": `${1.05 / speed}s` } as React.CSSProperties}>
+        <ImageResolveVisual variant={variant} />
+      </motion.span>}
+    </AnimatePresence>
+    <motion.img
+      className="image-demo-result"
+      src="/image-loader-sample.png"
+      alt=""
+      aria-hidden="true"
+      initial={false}
+      animate={{ opacity: phase === "loaded" ? 1 : 0 }}
+      transition={{ duration: .2 / speed, ease: [0.65, 0, 0.35, 1] }}
+    />
+  </span>;
+}
 
-        <section className="install" id="install"><span>Install</span><h2>One command.<br />Twelve ways to think.</h2><div className="install-inline large"><code>{install}</code><CopyButton value={install} compact /></div></section>
-        <footer className="footer"><a className="brand" href="#top"><span />Progress Narrative</a><p>MIT · React · Framer Motion</p><a href="#top">Back to top ↑</a></footer>
-      </main>
-    </LayoutGroup>
-  );
+export default function Home() {
+  const [theme, setTheme] = useState<Theme>("light");
+  const [collection, setCollection] = useState<"text" | "inline" | "image">("text");
+  const [selected, setSelected] = useState<TextLoaderVariant>("decode");
+  const [text, setText] = useState("Language takes shape one moment at a time.");
+  const [color, setColor] = useState("#111111");
+  const [speed, setSpeed] = useState(1);
+  const [paused, setPaused] = useState(false);
+  const [restartKey, setRestartKey] = useState(0);
+  const loaderColor = theme === "dark" ? "#f4f4f5" : "#111111";
+  const current = useMemo(() => loaders.find((loader) => loader.id === selected) ?? loaders[0], [selected]);
+  const install = "npm install generative-loaders";
+  const usage = `import { TextLoader } from "generative-loaders";\nimport "generative-loaders/styles.css";\n\n<TextLoader\n  text={streamedText}\n  variant="${selected}"\n  color="${color}"\n  speed={${speed}}\n/>`;
+
+  useEffect(() => {
+    const activeTheme = document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+    const frame = window.requestAnimationFrame(() => {
+      setTheme(activeTheme);
+      setColor(activeTheme === "dark" ? "#f4f4f5" : "#111111");
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+
+  function toggleTheme() {
+    const nextTheme: Theme = theme === "light" ? "dark" : "light";
+    const previousDefault = theme === "dark" ? "#f4f4f5" : "#111111";
+    setTheme(nextTheme);
+    if (color.toLowerCase() === previousDefault) setColor(nextTheme === "dark" ? "#f4f4f5" : "#111111");
+    document.documentElement.dataset.theme = nextTheme;
+    document.documentElement.style.colorScheme = nextTheme;
+    localStorage.setItem("theme", nextTheme);
+  }
+
+  function restart() {
+    setRestartKey((value) => value + 1);
+    setPaused(false);
+  }
+
+  function selectLoader(loader: (typeof loaders)[number]) {
+    setSelected(loader.id);
+    setColor(loaderColor);
+    restart();
+  }
+
+  function selectCollection(next: "text" | "inline" | "image") {
+    if (next === collection) return;
+    setCollection(next);
+    restart();
+  }
+
+  return <main id="top">
+    <nav className="nav shell">
+      <a className="brand" href="#top"><span className="brand-mark"><i /><i /><i /></span>Generative Loaders</a>
+      <div className="nav-links"><a href="#loaders">Loaders</a><a href="#playground">Playground</a><a href="#api">API</a></div>
+      <div className="nav-actions"><button className="theme-toggle" type="button" onClick={toggleTheme} aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`} title={`Switch to ${theme === "light" ? "dark" : "light"} mode`}><ThemeIcon theme={theme} /></button><a className="nav-install" href="#install">Install <span>↘</span></a></div>
+    </nav>
+
+    <header className="hero shell">
+      <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .08, ...spring }}>React loaders for<br /><span>generative UI.</span></motion.h1>
+      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: .18 }}>Text, inline, and image loading states.</motion.p>
+      <motion.div className="install-command" id="install" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .3, ...spring }}><code>{install}</code><CopyButton value={install} /></motion.div>
+    </header>
+
+    <section className="gallery shell" id="loaders" aria-labelledby="gallery-title">
+      <div className="gallery-toolbar">
+        <div className="collection-tabs" role="tablist" aria-label="Loader collection">
+            <button type="button" role="tab" aria-selected={collection === "text"} className={collection === "text" ? "active" : ""} onClick={() => selectCollection("text")}>Text loaders <span>16</span></button>
+            <button type="button" role="tab" aria-selected={collection === "inline"} className={collection === "inline" ? "active" : ""} onClick={() => selectCollection("inline")}>Inline loaders <span>14</span></button>
+            <button type="button" role="tab" aria-selected={collection === "image"} className={collection === "image" ? "active" : ""} onClick={() => selectCollection("image")}>Image loaders <span>09</span></button>
+        </div>
+        <h2 id="gallery-title" className="sr-only">{collection === "text" ? "Text loaders" : collection === "inline" ? "Inline loaders" : "Image loaders"}</h2>
+        <div className="global-controls">
+          <button type="button" onClick={() => setPaused((value) => !value)}>{paused ? "▶ Play" : "Ⅱ Pause"}</button>
+          <button type="button" onClick={restart}>↻ Restart</button><span />
+          {speeds.map((value) => <button key={value} className={speed === value ? "active" : ""} type="button" onClick={() => setSpeed(value)}>{value}×</button>)}
+        </div>
+      </div>
+      {collection === "text" ? <div className="loader-grid" role="tabpanel" aria-label="Text loaders">
+        {loaders.map((loader, index) => <motion.button
+          className={`loader-card${selected === loader.id ? " selected" : ""}`}
+          style={{ "--card-color": loaderColor } as React.CSSProperties}
+          type="button"
+          key={loader.id}
+          onClick={() => selectLoader(loader)}
+          initial={{ opacity: 0, y: 14 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: .15 }}
+          transition={{ delay: (index % 4) * .04, ...spring }}
+          whileHover={{ y: -3 }}
+        >
+          <span className="card-top"><span>{String(index + 1).padStart(2, "0")}</span><small>{loader.name}</small></span>
+          <span className="card-demo"><StreamingDemo key={`${loader.id}-${restartKey}-${theme}`} text={sampleText} variant={loader.id} color={loaderColor} speed={speed} paused={paused} phase={index * 12} /></span>
+          <span className="card-copy"><strong>{loader.name}</strong></span>
+          <span className="card-arrow">↗</span>
+        </motion.button>)}
+      </div> : collection === "inline" ? <div className="inline-gallery" role="tabpanel" aria-label="Inline loaders" key={`inline-${restartKey}`}>
+        {inlineLoaders.map((loader, index) => <motion.div
+          className="inline-card"
+          key={loader.id}
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: .3 }}
+          transition={{ delay: (index % 3) * .05, ...spring }}
+        >
+          <span className="inline-number">{String(index + 1).padStart(2, "0")}</span>
+          <div className="inline-demo"><InlineLoader variant={loader.id} size={28} speed={speed} color={loaderColor} paused={paused} /><span>{loader.copy}</span></div>
+          <div className="inline-copy"><strong>{loader.name}</strong></div>
+        </motion.div>)}
+      </div> : <div className="image-gallery" role="tabpanel" aria-label="Image loaders" key={`image-${restartKey}`}>
+        {imageLoaders.map((loader, index) => <motion.div
+          className="image-card"
+          key={loader.id}
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: .25 }}
+          transition={{ delay: (index % 4) * .05, ...spring }}
+        >
+          <span className="image-number">{String(index + 1).padStart(2, "0")}</span>
+          <div className="image-demo"><ImageLoaderDemo variant={loader.id} speed={speed} color={loaderColor} paused={paused} /></div>
+          <div className="image-copy"><strong>{loader.name}</strong></div>
+        </motion.div>)}
+      </div>}
+    </section>
+
+    <section className="playground shell" id="playground" aria-labelledby="playground-title">
+      <div className="section-heading"><h2 id="playground-title">Playground</h2></div>
+      <div className="playground-panel">
+        <div className="playground-controls">
+          <fieldset><legend>Variant</legend><div className="variant-list">{loaders.map((loader) => <button className={selected === loader.id ? "active" : ""} key={loader.id} type="button" onClick={() => selectLoader(loader)}>{loader.name}</button>)}</div></fieldset>
+          <fieldset><legend>Speed</legend><div className="segmented">{speeds.map((value) => <button className={speed === value ? "active" : ""} key={value} type="button" onClick={() => { setSpeed(value); restart(); }}>{value}×</button>)}</div></fieldset>
+          <label className="field"><span>Color</span><span className="color-field"><input aria-label="Text color" type="color" value={color} onChange={(event) => setColor(event.target.value)} /><code>{color}</code></span></label>
+          <label className="field"><span>Text</span><textarea value={text} onChange={(event) => setText(event.target.value)} rows={5} /></label>
+          <div className="playback-controls"><button type="button" onClick={() => setPaused((value) => !value)}>{paused ? "Play" : "Pause"}</button><button type="button" onClick={restart}>Restart</button></div>
+        </div>
+        <div className="playground-preview">
+          <div className="preview-grid" />
+          <StreamingDemo key={`${selected}-${restartKey}-${text}`} text={text || "Start typing…"} variant={selected} color={color} speed={speed} paused={paused} />
+          <p><span style={{ background: color }} />{current.name} · {speed}×</p>
+        </div>
+        <div className="code-block"><header><span>Usage</span><CopyButton value={usage} /></header><pre><code>{usage}</code></pre></div>
+      </div>
+    </section>
+
+    <section className="api shell" id="api" aria-labelledby="api-title">
+      <div className="section-heading"><h2 id="api-title">API</h2></div>
+      <h3>TextLoader</h3>
+      <div className="api-table" role="table" aria-label="TextLoader props">
+        {[['text', 'accumulated string', 'required'], ['variant', 'TextLoaderVariant', 'required'], ['color', 'CSS color', '#111111'], ['speed', 'positive number', '1'], ['paused', 'boolean', 'false']].map(([name, type, fallback]) => <div role="row" key={name}><code role="cell">{name}</code><span role="cell">{type}</span><small role="cell">{fallback}</small></div>)}
+      </div>
+      <h3>InlineLoader</h3>
+      <div className="api-table inline-api" role="table" aria-label="InlineLoader props">
+        {[['variant', 'InlineLoaderVariant', 'required'], ['size', 'number | CSS size', '1.15em'], ['color', 'CSS color', 'currentColor'], ['speed', 'positive number', '1'], ['paused', 'boolean', 'false'], ['label', 'string', 'decorative']].map(([name, type, fallback]) => <div role="row" key={name}><code role="cell">{name}</code><span role="cell">{type}</span><small role="cell">{fallback}</small></div>)}
+      </div>
+      <h3>ImageLoader</h3>
+      <div className="api-table inline-api" role="table" aria-label="ImageLoader props">
+        {[['variant', 'ImageLoaderVariant', 'required'], ['size', 'number | CSS size', '10rem'], ['color', 'CSS color', 'currentColor'], ['radius', 'number | CSS size', '10%'], ['speed', 'positive number', '1'], ['paused', 'boolean', 'false'], ['label', 'string', 'Generating image']].map(([name, type, fallback]) => <div role="row" key={name}><code role="cell">{name}</code><span role="cell">{type}</span><small role="cell">{fallback}</small></div>)}
+      </div>
+    </section>
+
+    <footer className="footer shell"><a className="brand" href="#top"><span className="brand-mark"><i /><i /><i /></span>Generative Loaders</a><p>MIT · React · Framer Motion</p><a href="#top">Back to top ↑</a></footer>
+  </main>;
 }

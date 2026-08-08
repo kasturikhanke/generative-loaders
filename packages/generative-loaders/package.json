@@ -1,7 +1,7 @@
 {
-  "name": "progress-narrative",
+  "name": "generative-loaders",
   "version": "0.1.0",
-  "description": "Readable, animated progress narratives for React agent interfaces.",
+  "description": "Accessible text-streaming, inline activity, and image-generation loaders for React.",
   "type": "module",
   "sideEffects": ["**/*.css"],
   "files": ["dist", "README.md", "LICENSE", "CHANGELOG.md"],
@@ -18,12 +18,15 @@
     }
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json && cp src/styles.css dist/styles.css && cp src/styles.css.d.ts dist/styles.css.d.ts",
+    "build": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\" && tsc -p tsconfig.build.json && cp src/styles.css dist/styles.css && cp src/styles.css.d.ts dist/styles.css.d.ts",
     "prepack": "npm run build"
   },
   "peerDependencies": {
     "react": ">=18",
     "react-dom": ">=18"
+  },
+  "dependencies": {
+    "framer-motion": "^13.0.0"
   },
   "devDependencies": {
     "@types/react": "^19.2.0",
@@ -35,8 +38,17 @@
   "engines": {
     "node": ">=20"
   },
-  "keywords": ["react", "ai", "agent", "progress", "status", "accessibility"],
+  "keywords": ["react", "ai", "text", "streaming", "loader", "animation", "framer-motion", "accessibility"],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kasturikhanke/generative-loaders.git",
+    "directory": "packages/generative-loaders"
+  },
+  "homepage": "https://github.com/kasturikhanke/generative-loaders#readme",
+  "bugs": {
+    "url": "https://github.com/kasturikhanke/generative-loaders/issues"
+  },
   "publishConfig": {
     "access": "public",
     "provenance": true
