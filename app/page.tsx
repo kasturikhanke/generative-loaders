@@ -189,7 +189,7 @@ function ImageLoaderDemo({ variant, color, speed, paused }: { variant: ImageLoad
       {visiblePhase === "loading" && <motion.span className="image-loader-layer" key="loader" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, scale: isDirectionalResolve ? 1 : .99 }} transition={{ duration: (isDirectionalResolve ? .22 : .3) / speed, ease: [0.65, 0, 0.35, 1] }}>
         <ImageLoader variant={variant} size="100%" speed={speed} color={color} paused={paused} label={`${variant} image generation`} />
       </motion.span>}
-      {visiblePhase === "resolving" && <motion.span className={`image-resolve-layer image-resolve-layer-${variant}`} key="resolving" role="status" aria-label="Resolving image" initial={{ opacity: isDirectionalResolve ? 1 : 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: (isDirectionalResolve ? .1 : .16) / speed }} style={{ "--resolve-duration": `${resolveDuration / speed}s` } as React.CSSProperties}>
+      {(visiblePhase === "resolving" || visiblePhase === "loaded") && <motion.span className={`image-resolve-layer image-resolve-layer-${variant}`} key="resolving" role={visiblePhase === "resolving" ? "status" : undefined} aria-label={visiblePhase === "resolving" ? "Resolving image" : undefined} initial={{ opacity: isDirectionalResolve ? 1 : 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: (isDirectionalResolve ? .1 : .16) / speed }} style={{ "--resolve-duration": `${resolveDuration / speed}s` } as React.CSSProperties}>
         <ImageResolveVisual variant={variant} />
       </motion.span>}
     </AnimatePresence>
@@ -198,7 +198,7 @@ function ImageLoaderDemo({ variant, color, speed, paused }: { variant: ImageLoad
       src="/image-loader-sample.png"
       alt=""
       aria-hidden="true"
-      style={{ opacity: visiblePhase === "loading" ? 0 : 1 }}
+      style={{ opacity: visiblePhase === "loaded" ? 1 : 0 }}
     />
   </span>;
 }
@@ -340,7 +340,7 @@ export default function Home() {
               exit={{ opacity: 0, y: -6 }}
               transition={{ duration: .2 }}
             >
-              <div className="context-window-bar"><span /><span /><span /><small>Quarterly report</small></div>
+              <div className="context-window-bar"><span /><span /><span /></div>
               <div className="context-button-content">
                 <small>Ready to create</small>
                 <h3>Turn your latest metrics into a clear narrative.</h3>

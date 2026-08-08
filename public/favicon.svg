@@ -1,13 +1,10 @@
 <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <radialGradient id="orb" cx="0" cy="0" r="1" gradientTransform="translate(16 16) rotate(90) scale(14)">
-      <stop offset="0" stop-color="#24271f"/>
-      <stop offset=".33" stop-color="#555b48"/>
-      <stop offset=".67" stop-color="#c4c9a1"/>
-      <stop offset=".86" stop-color="#7b8269"/>
-      <stop offset="1" stop-color="#22251e"/>
-    </radialGradient>
-  </defs>
-  <rect width="32" height="32" rx="8" fill="#0c0d0b"/>
-  <circle cx="16" cy="16" r="13" fill="url(#orb)"/>
+  <rect width="32" height="32" rx="8" fill="#111214"/>
+  <g fill="#fff">
+    <circle cx="16" cy="7" r="2.35"/>
+    <circle cx="24.56" cy="13.22" r="2.35"/>
+    <circle cx="21.29" cy="23.28" r="2.35"/>
+    <circle cx="10.71" cy="23.28" r="2.35"/>
+    <circle cx="7.44" cy="13.22" r="2.35"/>
+  </g>
 </svg>
