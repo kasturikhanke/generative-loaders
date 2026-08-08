@@ -7,7 +7,8 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://progress-narrative.kkasturi2502.chatgpt.site"),
+  metadataBase: new URL("https://generativeloaders.com"),
+  alternates: { canonical: "/" },
   title: "Generative Loaders — text, inline, and image loaders for React",
   description: "Animated React loaders for text, inline, and image generation states.",
   icons: { icon: [{ url: "/favicon.svg", type: "image/svg+xml" }], shortcut: "/favicon.svg" },

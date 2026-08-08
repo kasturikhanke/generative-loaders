@@ -2,17 +2,27 @@ import assert from "node:assert/strict";
 import { access, readFile } from "node:fs/promises";
 import test from "node:test";
 
-async function render(pathname = "/") {
+async function render(pathname = "/", origin = "http://localhost") {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
   const { default: worker } = await import(workerUrl.href);
 
   return worker.fetch(
-    new Request(`http://localhost${pathname}`, { headers: { accept: "text/html" } }),
+    new Request(`${origin}${pathname}`, { headers: { accept: "text/html" } }),
     { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) } },
     { waitUntil() {}, passThroughOnException() {} },
   );
 }
+
+test("redirects the generated Sites hostname to the canonical domain", async () => {
+  const response = await render(
+    "/docs?source=sites",
+    "https://progress-narrative.kkasturi2502.chatgpt.site",
+  );
+
+  assert.equal(response.status, 308);
+  assert.equal(response.headers.get("location"), "https://generativeloaders.com/docs?source=sites");
+});
 
 test("server-renders the text loader gallery", async () => {
   const response = await render();
@@ -78,6 +88,8 @@ test("ships renamed metadata and social artwork", async () => {
   assert.match(layout, /Generative Loaders/);
   assert.match(layout, /text, inline, and image loaders/);
   assert.match(layout, /generative-loaders-og\.png/);
+  assert.match(layout, /https:\/\/generativeloaders\.com/);
+  assert.match(layout, /alternates:\s*\{ canonical: "\/" \}/);
   assert.match(packageJson, /generative-loaders-workspace/);
   assert.match(packageManifest, /"name": "generative-loaders"/);
   assert.doesNotMatch(`${layout}${packageJson}${packageManifest}`, /Progress Narrative|codex-preview|react-loading-skeleton/i);
