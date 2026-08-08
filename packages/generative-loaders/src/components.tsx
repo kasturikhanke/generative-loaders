@@ -290,7 +290,7 @@ function InlineVisual({ variant }: Pick<InlineLoaderProps, "variant">) {
   if (variant === "orbit") return <span className="il-orbit"><i /><i /><i /><b /></span>;
   if (variant === "ripple") return <span className="il-ripple"><i /><i /><i /><b /></span>;
   if (variant === "signal") return <span className="il-signal">{Array.from({ length: 5 }, (_, index) => <i key={index} style={{ "--il-i": index, "--il-delay": `${index * -.12}s` } as CSSProperties} />)}</span>;
-  if (variant === "spark") return <span className="il-spark">{Array.from({ length: 8 }, (_, index) => <i key={index} style={{ "--il-i": index, "--il-angle": `${index * 45}deg`, "--il-delay": `${index * -.12}s` } as CSSProperties} />)}<b /></span>;
+  if (variant === "spark") return <span className="il-spark"><i /><i /><i /></span>;
   if (variant === "rotor") return <span className="il-rotor"><i /><i /><i /><b /></span>;
   if (variant === "pixel-drift") return <span className="il-pixel-drift">{Array.from({ length: 16 }, (_, index) => <i key={index} style={{ "--il-i": index, "--il-delay": `${((index % 4) + Math.floor(index / 4)) * -.1}s` } as CSSProperties} />)}</span>;
   if (variant === "chomp") return <span className="il-chomp"><b />{Array.from({ length: 4 }, (_, index) => <i key={index} style={{ "--il-delay": `${index * -.24}s` } as CSSProperties} />)}</span>;

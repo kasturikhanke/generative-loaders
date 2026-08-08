@@ -245,10 +245,22 @@
 .il-signal i { width: 12%; height: 30%; border-radius: 99px; background: currentColor; animation: il-signal var(--il-duration) ease-in-out infinite; animation-delay: var(--il-delay); }
 @keyframes il-signal { 0%,100% { height: 25%; opacity: .28; } 50% { height: 100%; opacity: 1; } }
 
-.il-spark { animation: il-turn calc(var(--il-duration) * 1.65) linear infinite; }
-.il-spark i { position: absolute; left: 47%; top: 3%; width: 6%; height: 27%; border-radius: 99px; background: currentColor; transform-origin: 50% 174%; transform: rotate(var(--il-angle)) scaleY(.45); animation: il-ray var(--il-duration) ease-in-out infinite; animation-delay: var(--il-delay); }
-.il-spark b { position: absolute; inset: 41%; border-radius: 50%; background: currentColor; }
-@keyframes il-ray { 0%,100% { opacity: .18; transform: rotate(var(--il-angle)) scaleY(.45); } 50% { opacity: 1; transform: rotate(var(--il-angle)) scaleY(1); } }
+.il-spark i {
+  position: absolute;
+  display: block;
+  aspect-ratio: 1;
+  background: currentColor;
+  clip-path: polygon(50% 0,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0 50%,39% 39%);
+  animation: il-spark var(--il-duration) cubic-bezier(.45,0,.2,1) infinite;
+}
+.il-spark i:nth-child(1) { inset: 18%; }
+.il-spark i:nth-child(2) { width: 24%; right: 1%; top: 2%; animation-delay: calc(var(--il-duration) * -.34); }
+.il-spark i:nth-child(3) { width: 17%; left: 4%; bottom: 8%; animation-delay: calc(var(--il-duration) * -.67); }
+@keyframes il-spark {
+  0%,100% { opacity: .2; transform: scale(.38) rotate(-12deg); }
+  42% { opacity: 1; transform: scale(1) rotate(0deg); }
+  68% { opacity: .58; transform: scale(.72) rotate(9deg); }
+}
 
 .il-rotor,
 .il-chomp,

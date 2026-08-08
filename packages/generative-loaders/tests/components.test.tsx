@@ -71,6 +71,16 @@ describe("InlineLoader", () => {
     expect(screen.getByRole("status", { name: "Thinking" })).toBeInTheDocument();
   });
 
+  it("gives spark and aperture distinct visual structures", () => {
+    const { container, rerender } = render(<InlineLoader variant="spark" />);
+    expect(container.querySelectorAll(".il-spark i")).toHaveLength(3);
+    expect(container.querySelector(".il-spark b")).not.toBeInTheDocument();
+
+    rerender(<InlineLoader variant="aperture" />);
+    expect(container.querySelectorAll(".il-aperture i")).toHaveLength(6);
+    expect(container.querySelector(".il-aperture b")).toBeInTheDocument();
+  });
+
   it("normalizes sizing, speed, color, pause, and classes", () => {
     render(<InlineLoader variant="signal" size={28} speed={0} color="#123456" paused className="example" label="Loading" />);
     const loader = screen.getByRole("status");
