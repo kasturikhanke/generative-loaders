@@ -21,8 +21,15 @@ export function GitHubButton({ compact = false }: { compact?: boolean }) {
       signal: controller.signal,
     })
       .then((response) => response.ok ? response.json() : Promise.reject(new Error("Download count unavailable")))
-      .then((data: { downloads?: number }) => {
-        if (typeof data.downloads === "number") setDownloads(data.downloads);
+      .then((data) => {
+        if (
+          typeof data === "object" &&
+          data !== null &&
+          "downloads" in data &&
+          typeof data.downloads === "number"
+        ) {
+          setDownloads(data.downloads);
+        }
       })
       .catch(() => undefined);
 

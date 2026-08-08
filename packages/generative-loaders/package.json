@@ -1,10 +1,17 @@
 {
   "name": "generative-loaders",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Accessible text-streaming, inline activity, and image-generation loaders for React.",
   "type": "module",
-  "sideEffects": ["**/*.css"],
-  "files": ["dist", "README.md", "LICENSE", "CHANGELOG.md"],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -38,14 +45,23 @@
   "engines": {
     "node": ">=20"
   },
-  "keywords": ["react", "ai", "text", "streaming", "loader", "animation", "framer-motion", "accessibility"],
+  "keywords": [
+    "react",
+    "ai",
+    "text",
+    "streaming",
+    "loader",
+    "animation",
+    "framer-motion",
+    "accessibility"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kasturikhanke/generative-loaders.git",
     "directory": "packages/generative-loaders"
   },
-  "homepage": "https://github.com/kasturikhanke/generative-loaders#readme",
+  "homepage": "https://progress-narrative.kkasturi2502.chatgpt.site",
   "bugs": {
     "url": "https://github.com/kasturikhanke/generative-loaders/issues"
   },

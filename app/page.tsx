@@ -189,7 +189,7 @@ function SiteFooter() {
       </motion.div>
 
       <div className="footer-editorial-meta">
-        <p>© 2026 Generative Loaders — MIT licensed</p>
+        <p>© 2026 Generative Loaders by Kasturi Khanke — MIT licensed</p>
         <nav aria-label="Footer links"><a href="https://github.com/kasturikhanke/generative-loaders">GitHub ↗</a><a href="/docs">Docs</a><a href="#top">Back to top ↑</a></nav>
       </div>
     </div>

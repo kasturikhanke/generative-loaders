@@ -22,7 +22,7 @@ test("server-renders the text loader gallery", async () => {
   const html = await response.text();
   assert.match(html, /<title>Generative Loaders/);
   assert.match(html, /React loaders for/);
-  assert.match(html, /Framer Motion/);
+  assert.match(html, /Text, inline, and image loading states/);
   for (const variant of ["Decode", "Typewriter", "Skeleton", "Cascade", "Focus", "Wipe", "Flip", "Redact", "Line by line", "Terminal", "Wave", "Dissolve", "Slice", "Tracking", "Coalesce", "Fragments"]) {
     assert.match(html, new RegExp(`>${variant}<`));
   }
@@ -44,7 +44,7 @@ test("server-renders the text loader gallery", async () => {
   assert.match(html, />GitHub</);
   assert.doesNotMatch(html, />API</);
   assert.doesNotMatch(html, /Ideas arrive quietly/);
-  assert.doesNotMatch(html, /Progress Narrative|Thinking steps|progress-narrative|codex-preview|react-loading-skeleton/i);
+  assert.doesNotMatch(html, /Progress Narrative|Thinking steps|codex-preview|react-loading-skeleton/i);
 });
 
 test("server-renders complete library documentation", async () => {
@@ -80,6 +80,7 @@ test("ships renamed metadata and social artwork", async () => {
   assert.match(layout, /generative-loaders-og\.png/);
   assert.match(packageJson, /generative-loaders-workspace/);
   assert.match(packageManifest, /"name": "generative-loaders"/);
-  assert.doesNotMatch(`${layout}${packageJson}${packageManifest}`, /Progress Narrative|progress-narrative/);
+  assert.doesNotMatch(`${layout}${packageJson}${packageManifest}`, /Progress Narrative|codex-preview|react-loading-skeleton/i);
+  assert.doesNotMatch(`${packageJson}${packageManifest}`, /"name"\s*:\s*"progress-narrative"/i);
   await access(new URL("../public/generative-loaders-og.png", import.meta.url));
 });

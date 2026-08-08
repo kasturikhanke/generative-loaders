@@ -1,6 +1,6 @@
 {
   "name": "generative-loaders-workspace",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
   "engines": {
@@ -14,8 +14,9 @@
     "build:package": "npm run build --workspace generative-loaders",
     "build": "npm run build:package && WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext build",
     "start": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext start",
+    "typecheck": "tsc --noEmit",
     "test:unit": "vitest run",
-    "test": "npm run build:package && npm run test:unit && npm run build && node --test tests/rendered-html.test.mjs",
+    "test": "npm run build:package && npm run typecheck && npm run test:unit && npm run build && node --test tests/rendered-html.test.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern packages/generative-loaders/dist",
     "pack:package": "mkdir -p artifacts && npm pack --workspace generative-loaders --pack-destination artifacts",
     "db:generate": "drizzle-kit generate"
@@ -29,6 +30,7 @@
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "1.51.1",
+    "@cloudflare/workers-types": "5.20260808.1",
     "@eslint/js": "9.39.4",
     "@next/eslint-plugin-next": "16.2.6",
     "@tailwindcss/postcss": "4.2.1",

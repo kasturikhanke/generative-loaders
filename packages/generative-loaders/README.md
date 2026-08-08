@@ -1,22 +1,22 @@
 # generative-loaders
 
-Sixteen ways to stream AI-generated text, fourteen compact indicators for the moment before words arrive, and nine square-forming image loaders.
+Accessible React loading states designed for generative interfaces: sixteen animated text reveals, fourteen compact activity indicators, and nine image-generation placeholders.
+
+[Live gallery](https://progress-narrative.kkasturi2502.chatgpt.site) · [Documentation](https://progress-narrative.kkasturi2502.chatgpt.site/docs) · [GitHub](https://github.com/kasturikhanke/generative-loaders) · [Report an issue](https://github.com/kasturikhanke/generative-loaders/issues/new/choose)
+
+## Install
 
 ```bash
 npm install generative-loaders
 ```
 
+The package supports React 18 and newer. Import the stylesheet once near your application root.
+
 ```tsx
 import { ImageLoader, InlineLoader, TextLoader } from "generative-loaders";
 import "generative-loaders/styles.css";
 
-// `streamedText` is the response accumulated so far.
-<TextLoader
-  text={streamedText}
-  variant="decode"
-  color="#111111"
-  speed={1}
-/>
+<TextLoader text={streamedText} variant="decode" color="#111111" />
 
 <span>
   <InlineLoader variant="matrix" /> Thinking through the details…
@@ -25,28 +25,57 @@ import "generative-loaders/styles.css";
 <ImageLoader variant="bands" size={160} label="Generating image" />
 ```
 
+## Streaming text
+
+Pass the complete response received so far—not only the newest token. `TextLoader` keeps the existing prefix stable and animates only the newly appended suffix.
+
+```tsx
+const [text, setText] = useState("");
+
+// Append each decoded response chunk as it arrives.
+setText((current) => current + chunk);
+
+return <TextLoader text={text} variant="cascade" />;
+```
+
 ## Variants
 
-`decode`, `typewriter`, `skeleton`, `cascade`, `focus`, `wipe`, `flip`, `redact`, `line`, `terminal`, `wave`, `dissolve`, `slice`, `tracking`, `coalesce`, and `fragments`.
+**Text:** `decode`, `typewriter`, `skeleton`, `cascade`, `focus`, `wipe`, `flip`, `redact`, `line`, `terminal`, `wave`, `dissolve`, `slice`, `tracking`, `coalesce`, `fragments`
 
-Inline variants: `glyph`, `matrix`, `orbit`, `ripple`, `signal`, `spark`, `rotor`, `pixel-drift`, `chomp`, `snake`, `fold`, `gravity`, `domino`, and `aperture`.
+**Inline:** `glyph`, `matrix`, `orbit`, `ripple`, `signal`, `spark`, `rotor`, `pixel-drift`, `chomp`, `snake`, `fold`, `gravity`, `domino`, `aperture`
 
-Image variants: `skeleton`, `bands`, `tiles`, `scan`, `pixel-grid`, `resolution`, `focus`, `shutter`, and `contour`.
+**Image:** `skeleton`, `bands`, `tiles`, `scan`, `pixel-grid`, `resolution`, `focus`, `shutter`, `contour`
 
 ## Props
 
+### `TextLoader`
+
 | Prop | Type | Default |
 | --- | --- | --- |
-| `text` | accumulated string | required |
+| `text` | `string` | required |
 | `variant` | `TextLoaderVariant` | required |
 | `color` | CSS color string | `"#111111"` |
 | `speed` | positive number | `1` |
-| `paused` | boolean | `false` |
-| `className` | string | — |
-| `aria-label` | string | normalized `text` |
+| `paused` | `boolean` | `false` |
+| `className` | `string` | — |
+| `aria-label` | `string` | normalized `text` |
 
-Start with an empty string and append each chunk from your AI response to `text`. The component never predicts, reserves, or renders future words: the existing prefix stays in place and only the newly received suffix animates. It is SSR-safe, exposes the currently received text to assistive technology, and skips entrance motion when reduced motion is requested.
+`InlineLoader` accepts `variant`, `size`, `color`, `speed`, `paused`, `className`, and an optional accessible `label`.
 
-`InlineLoader` accepts `variant`, `size`, `color`, `speed`, `paused`, `className`, and an optional `label`. It is hidden from assistive technology by default when the adjacent status copy already communicates the activity.
+`ImageLoader` accepts `variant`, `size`, `color`, `radius`, `speed`, `paused`, `className`, and `label`. Its default label is “Generating image.”
 
-`ImageLoader` accepts `variant`, `size`, `color`, `radius`, `speed`, `paused`, `className`, and `label`. It reserves a square frame and announces “Generating image” by default.
+All prop and variant types are exported from the package root.
+
+## Accessibility and behavior
+
+- Polite live status output for streamed text.
+- Decorative animation layers hidden from assistive technology.
+- Reduced-motion support with meaningful static states.
+- Stable SSR markup and append-aware text updates.
+- Safe fallback for invalid speed values.
+
+Read the [complete documentation](https://progress-narrative.kkasturi2502.chatgpt.site/docs) for integration examples and troubleshooting.
+
+## License
+
+[MIT](./LICENSE) © Kasturi Khanke and Generative Loaders contributors.

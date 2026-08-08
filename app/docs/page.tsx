@@ -19,7 +19,7 @@ export default function DocsPage() {
     </nav>
 
     <header className="docs-hero shell">
-      <p className="docs-eyebrow">Documentation · v0.1.0</p>
+      <p className="docs-eyebrow">Documentation · v0.1.1</p>
       <h1>Build loading states that<br />feel part of the response.</h1>
       <p>Everything you need to add accessible text streaming, compact activity, and image-generation loaders to a React interface.</p>
     </header>
