@@ -5,7 +5,7 @@
 [![npm downloads](https://img.shields.io/npm/dm/generative-loaders.svg)](https://www.npmjs.com/package/generative-loaders)
 [![MIT license](https://img.shields.io/badge/license-MIT-111111.svg)](./LICENSE)
 
-Accessible React loading states designed for generative interfaces: sixteen animated text reveals, fourteen compact activity indicators, and nine image-generation placeholders.
+Accessible React loading states designed for generative interfaces: sixteen animated text reveals, eighteen compact activity indicators, and eight image-generation placeholders.
 
 [Live gallery](https://generativeloaders.com) · [Documentation](https://generativeloaders.com/docs) · [npm](https://www.npmjs.com/package/generative-loaders) · [Report an issue](https://github.com/kasturikhanke/generative-loaders/issues/new/choose)
 
@@ -45,8 +45,8 @@ export function PendingImage() {
 | Component | Use it for | Included variants |
 | --- | --- | ---: |
 | `TextLoader` | Responses that grow as tokens or chunks arrive | 16 |
-| `InlineLoader` | Buttons, status rows, and the wait before text arrives | 14 |
-| `ImageLoader` | Reserved image frames while generation is in progress | 9 |
+| `InlineLoader` | Buttons, status rows, and the wait before text arrives | 18 |
+| `ImageLoader` | Reserved image frames while generation is in progress | 8 |
 
 ### Streaming text
 
@@ -85,9 +85,9 @@ export function StreamingAnswer() {
 
 **Text:** `decode`, `typewriter`, `skeleton`, `cascade`, `focus`, `wipe`, `flip`, `redact`, `line`, `terminal`, `wave`, `dissolve`, `slice`, `tracking`, `coalesce`, `fragments`
 
-**Inline:** `glyph`, `matrix`, `orbit`, `ripple`, `signal`, `spark`, `rotor`, `pixel-drift`, `chomp`, `snake`, `fold`, `gravity`, `domino`, `aperture`
+**Inline:** `glyph`, `matrix`, `orbit`, `ripple`, `signal`, `spark`, `rotor`, `pixel-drift`, `chomp`, `snake`, `fold`, `gravity`, `domino`, `aperture`, `dot-pulse`, `vortex`, `halo`, `count-up`
 
-**Image:** `skeleton`, `bands`, `tiles`, `scan`, `pixel-grid`, `resolution`, `focus`, `shutter`, `contour`
+**Image:** `skeleton`, `bands`, `tiles`, `scan`, `pixel-grid`, `resolution`, `focus`, `shutter`
 
 See every variant, speed control, and usage context in the [live gallery](https://generativeloaders.com).
 

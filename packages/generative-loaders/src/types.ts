@@ -40,7 +40,11 @@ export type InlineLoaderVariant =
   | "fold"
   | "gravity"
   | "domino"
-  | "aperture";
+  | "aperture"
+  | "dot-pulse"
+  | "vortex"
+  | "halo"
+  | "count-up";
 
 export interface InlineLoaderProps {
   variant: InlineLoaderVariant;
@@ -61,8 +65,7 @@ export type ImageLoaderVariant =
   | "pixel-grid"
   | "resolution"
   | "focus"
-  | "shutter"
-  | "contour";
+  | "shutter";
 
 export interface ImageLoaderProps {
   variant: ImageLoaderVariant;

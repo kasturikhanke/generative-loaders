@@ -2,7 +2,8 @@
 
 ## 0.1.1
 
-- Refined shutter and contour image-loader motion for cleaner, more synchronized frames.
+- Added the `count-up` inline loader, which displays every integer from 0 through 100.
+- Reduced the image-loader collection to eight variants.
 - Expanded package documentation, support links, and ownership metadata.
 
 ## 0.1.0

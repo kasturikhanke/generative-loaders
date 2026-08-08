@@ -42,6 +42,10 @@ const inlineLoaders: Array<{ id: InlineLoaderVariant; name: string; copy: string
   { id: "gravity", name: "Gravity", copy: "Drawing signals inward…" },
   { id: "domino", name: "Domino", copy: "Setting things in motion…" },
   { id: "aperture", name: "Aperture", copy: "Bringing it into focus…" },
+  { id: "dot-pulse", name: "Dot pulse", copy: "Picking up the next step…" },
+  { id: "vortex", name: "Vortex", copy: "Gathering the pieces…" },
+  { id: "halo", name: "Halo", copy: "Holding the thought…" },
+  { id: "count-up", name: "Count up", copy: "Tracking progress…" },
 ];
 
 const imageLoaders: Array<{ id: ImageLoaderVariant; name: string }> = [
@@ -53,7 +57,6 @@ const imageLoaders: Array<{ id: ImageLoaderVariant; name: string }> = [
   { id: "resolution", name: "Resolution" },
   { id: "focus", name: "Focus" },
   { id: "shutter", name: "Shutter" },
-  { id: "contour", name: "Contour" },
 ];
 
 const resolveCells = Array.from({ length: 16 }, (_, index) => ({
@@ -62,12 +65,45 @@ const resolveCells = Array.from({ length: 16 }, (_, index) => ({
   y: Math.floor(index / 4),
 }));
 
+const resolutionResolveCells = Array.from({ length: 36 }, (_, index) => ({
+  index,
+  x: index % 6,
+  y: Math.floor(index / 6),
+}));
+
 const speeds = [0.75, 1, 1.5];
 const spring = { type: "spring" as const, stiffness: 340, damping: 30 };
 
 type Theme = "light" | "dark";
 type LoaderCollection = "text" | "inline" | "image";
 type ContextFormat = "button" | "chat" | "page" | "image";
+
+function PlaybackControls({ paused, speed, onPauseToggle, onRestart, onSpeedChange }: {
+  paused: boolean;
+  speed: number;
+  onPauseToggle: () => void;
+  onRestart: () => void;
+  onSpeedChange: (speed: number) => void;
+}) {
+  return <div className="playback-controls" aria-label="Animation controls">
+    <fieldset>
+      <legend>Animation speed</legend>
+      <div className="playback-speed">
+        {speeds.map((value) => <button
+          aria-pressed={speed === value}
+          className={speed === value ? "active" : ""}
+          key={value}
+          type="button"
+          onClick={() => onSpeedChange(value)}
+        >{value}×</button>)}
+      </div>
+    </fieldset>
+    <div className="playback-actions">
+      <button type="button" onClick={onPauseToggle}>{paused ? "Play" : "Pause"}</button>
+      <button type="button" onClick={onRestart}>Restart</button>
+    </div>
+  </div>;
+}
 
 function ThemeIcon({ theme }: { theme: Theme }) {
   return theme === "dark" ? <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20.2 15.7A8.5 8.5 0 0 1 8.3 3.8 8.5 8.5 0 1 0 20.2 15.7Z" /></svg> : <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.5" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>;
@@ -83,11 +119,11 @@ function CopyButton({ value }: { value: string }) {
   return <motion.button className="copy-button" type="button" onClick={copy} whileTap={{ scale: .95 }}><AnimatePresence mode="wait" initial={false}><motion.span key={copied ? "copied" : "copy"} initial={{ opacity: 0, y: 3 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -3 }} transition={{ duration: .13 }}>{copied ? "Copied ✓" : "Copy"}</motion.span></AnimatePresence></motion.button>;
 }
 
-function StreamingDemo({ text, variant, color, speed, paused, phase = 0 }: { text: string; variant: TextLoaderVariant; color: string; speed: number; paused: boolean; phase?: number }) {
+function StreamingDemo({ text, variant, color, speed, paused, phase = 0, immediate = false }: { text: string; variant: TextLoaderVariant; color: string; speed: number; paused: boolean; phase?: number; immediate?: boolean }) {
   const chunks = useMemo(() => text.match(/\S+\s*/g) ?? [], [text]);
-  const [received, setReceived] = useState(0);
+  const [received, setReceived] = useState(immediate ? Math.min(1, chunks.length) : 0);
   const [fading, setFading] = useState(false);
-  const [started, setStarted] = useState(false);
+  const [started, setStarted] = useState(immediate);
 
   useEffect(() => {
     if (paused) return;
@@ -122,17 +158,19 @@ function ImageResolveVisual({ variant }: { variant: ImageLoaderVariant }) {
   })}</span>;
   if (variant === "pixel-grid") return <span className="image-resolve-pixel-grid">{resolveCells.map(({ index, x, y }) => <i key={index} style={{ "--resolve-x": x, "--resolve-y": y, "--resolve-position-x": `${x * 33.333}%`, "--resolve-position-y": `${y * 33.333}%`, "--resolve-delay": `${(x + y) * .045}s` } as React.CSSProperties} />)}</span>;
   if (variant === "scan") return <span className="image-resolve-scan"><i /><b /></span>;
-  if (variant === "resolution") return <span className="image-resolve-resolution"><i /><i /><b /></span>;
+  if (variant === "resolution") return <span className="image-resolve-resolution">{resolutionResolveCells.map(({ index, x, y }) => {
+    const ring = Math.abs(x - 2.5) + Math.abs(y - 2.5) - 1;
+    return <i key={index} style={{ "--resolve-position-x": `${x * 20}%`, "--resolve-position-y": `${y * 20}%`, "--resolve-ring": ring } as React.CSSProperties} />;
+  })}</span>;
   if (variant === "focus") return <span className="image-resolve-focus" />;
-  if (variant === "shutter") return <span className="image-resolve-shutter"><i /><i /></span>;
-  return <span className="image-resolve-contour"><i />{Array.from({ length: 4 }, (_, index) => <b key={index} />)}</span>;
+  return <span className="image-resolve-shutter"><i /><i /></span>;
 }
 
 function ImageLoaderDemo({ variant, color, speed, paused }: { variant: ImageLoaderVariant; color: string; speed: number; paused: boolean }) {
   const [phase, setPhase] = useState<"loading" | "resolving" | "loaded">("loading");
   const reduceMotion = Boolean(useReducedMotion());
   const visiblePhase = reduceMotion ? "loaded" : phase;
-  const isDirectionalResolve = variant === "shutter" || variant === "contour";
+  const isDirectionalResolve = variant === "shutter";
   const resolveDuration = isDirectionalResolve ? 1.15 : 1.05;
 
   useEffect(() => {
@@ -160,9 +198,7 @@ function ImageLoaderDemo({ variant, color, speed, paused }: { variant: ImageLoad
       src="/image-loader-sample.png"
       alt=""
       aria-hidden="true"
-      initial={false}
-      animate={{ opacity: visiblePhase === "loaded" ? 1 : 0 }}
-      transition={{ duration: .2 / speed, ease: [0.65, 0, 0.35, 1] }}
+      style={{ opacity: visiblePhase === "loading" ? 0 : 1 }}
     />
   </span>;
 }
@@ -189,7 +225,7 @@ function SiteFooter() {
       </motion.div>
 
       <div className="footer-editorial-meta">
-        <p>© 2026 Generative Loaders by Kasturi Khanke — MIT licensed</p>
+        <p>Created by Kasturi Khanke</p>
         <nav aria-label="Footer links"><a href="https://github.com/kasturikhanke/generative-loaders">GitHub ↗</a><a href="/docs">Docs</a><a href="#top">Back to top ↑</a></nav>
       </div>
     </div>
@@ -207,7 +243,10 @@ export default function Home() {
   const [paused, setPaused] = useState(false);
   const [restartKey, setRestartKey] = useState(0);
   const [pickerCycle, setPickerCycle] = useState(0);
+  const [cardCycles, setCardCycles] = useState<Record<string, number>>({});
+  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const loaderColor = theme === "dark" ? "#f4f4f5" : "#111111";
+  const imageLoaderColor = theme === "dark" ? "#f4f4f5" : "#c9cdd3";
   const install = "npm install generative-loaders";
   useEffect(() => {
     const activeTheme = document.documentElement.dataset.theme === "dark" ? "dark" : "light";
@@ -236,6 +275,12 @@ export default function Home() {
     setPaused(false);
   }
 
+  function restartCard(collection: LoaderCollection, id: string) {
+    const cardKey = `${collection}-${id}`;
+    setHoveredCard(cardKey);
+    setCardCycles((cycles) => ({ ...cycles, [cardKey]: (cycles[cardKey] ?? 0) + 1 }));
+  }
+
   function selectLoader(loader: (typeof loaders)[number]) {
     setSelected(loader.id);
     restart();
@@ -247,11 +292,16 @@ export default function Home() {
     restart();
   }
 
+  function setPlaybackSpeed(nextSpeed: number) {
+    setSpeed(nextSpeed);
+    restart();
+  }
+
   return <main id="top">
     <nav className="nav shell">
       <a className="brand" href="#top"><BrandMark />Generative Loaders</a>
       <div className="nav-links"><a href="#contexts">In context</a><a href="#loaders">Loaders</a><a href="/docs">Docs</a></div>
-      <div className="nav-actions"><GitHubButton compact /><button className="theme-toggle" type="button" onClick={toggleTheme} aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`} title={`Switch to ${theme === "light" ? "dark" : "light"} mode`}><ThemeIcon theme={theme} /></button><a className="nav-install nav-install-home" href="#install">Install <span>↘</span></a><a className="nav-install nav-docs-mobile" href="/docs">Docs <span>↗</span></a></div>
+      <div className="nav-actions"><GitHubButton compact /><button className="theme-toggle" type="button" onClick={toggleTheme} aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`} title={`Switch to ${theme === "light" ? "dark" : "light"} mode`}><ThemeIcon theme={theme} /></button><a className="nav-install nav-docs-mobile" href="/docs">Docs <span>↗</span></a></div>
     </nav>
 
     <header className="hero shell">
@@ -263,7 +313,7 @@ export default function Home() {
     <section className="contexts shell" id="contexts" aria-label="Loader examples in context">
       <div className="context-panel">
         <div className="context-sidebar">
-          <div className="context-tabs" role="tablist" aria-label="Example format">
+          <div className="segmented-control context-tabs" role="tablist" aria-label="Example format">
             {(["button", "chat", "page", "image"] as const).map((format, index) => <button
               id={`context-tab-${format}`}
               aria-controls={`context-panel-${format}`}
@@ -275,10 +325,7 @@ export default function Home() {
               type="button"
             ><span>{String(index + 1).padStart(2, "0")}</span>{format[0].toUpperCase() + format.slice(1)}</button>)}
           </div>
-          <div className="context-controls">
-            <fieldset><legend>Speed</legend><div className="context-speed">{speeds.map((value) => <button aria-pressed={speed === value} className={speed === value ? "active" : ""} key={value} type="button" onClick={() => { setSpeed(value); restart(); }}>{value}×</button>)}</div></fieldset>
-            <div className="context-playback"><button type="button" onClick={() => setPaused((value) => !value)}>{paused ? "Play" : "Pause"}</button><button type="button" onClick={restart}>Restart</button></div>
-          </div>
+          <PlaybackControls paused={paused} speed={speed} onPauseToggle={() => setPaused((value) => !value)} onRestart={restart} onSpeedChange={setPlaybackSpeed} />
         </div>
         <div className="context-stage">
           <AnimatePresence initial={false} mode="wait">
@@ -349,14 +396,16 @@ export default function Home() {
             >
               <header><b>Canvas</b><nav><span>Generate</span><span>Library</span></nav><i /></header>
               <div className="context-image-workspace">
-                <aside>
-                  <small>Prompt</small>
-                  <p>A sunlit Mediterranean villa, shaped around an ancient olive tree.</p>
-                  <div><span>Square</span><span>Editorial</span></div>
-                  <button disabled type="button">Generating image</button>
+                <aside aria-busy="true">
+                  <fieldset className="context-image-controls" disabled>
+                    <small>Prompt</small>
+                    <p>A sunlit Mediterranean villa, shaped around an ancient olive tree.</p>
+                    <div><span>Square</span><span>Editorial</span></div>
+                    <button type="button">Generating image…</button>
+                  </fieldset>
                 </aside>
                 <div className="context-image-output">
-                  <ImageLoaderDemo key={`${selectedImage}-${restartKey}-context`} variant={selectedImage} speed={speed} color={loaderColor} paused={paused} />
+                  <ImageLoaderDemo key={`${selectedImage}-${restartKey}-context`} variant={selectedImage} speed={speed} color={imageLoaderColor} paused={paused} />
                   <p><strong>Olive courtyard</strong><span>1024 × 1024</span></p>
                 </div>
               </div>
@@ -401,7 +450,7 @@ export default function Home() {
                 onClick={() => { setSelectedImage(loader.id); restart(); }}
                 role="option"
                 type="button"
-              ><span aria-hidden="true" className="context-image-swatch"><ImageLoader variant={loader.id} size={42} radius={7} speed={speed} color={loaderColor} paused={paused} /></span><span>{loader.name}</span></button>)}
+              ><span aria-hidden="true" className="context-image-swatch"><ImageLoader variant={loader.id} size={42} radius={7} speed={speed} color={imageLoaderColor} paused={paused} /></span><span>{loader.name}</span></button>)}
             </div>
           </div>}
         </div>
@@ -410,64 +459,68 @@ export default function Home() {
 
     <section className="gallery shell" id="loaders" aria-labelledby="gallery-title">
       <div className="gallery-toolbar">
-        <div className="collection-tabs" role="tablist" aria-label="Loader collection">
+        <div className="segmented-control collection-tabs" role="tablist" aria-label="Loader collection">
             <button type="button" role="tab" aria-selected={collection === "text"} className={collection === "text" ? "active" : ""} onClick={() => selectCollection("text")}>Text loaders <span>16</span></button>
-            <button type="button" role="tab" aria-selected={collection === "inline"} className={collection === "inline" ? "active" : ""} onClick={() => selectCollection("inline")}>Inline loaders <span>14</span></button>
-            <button type="button" role="tab" aria-selected={collection === "image"} className={collection === "image" ? "active" : ""} onClick={() => selectCollection("image")}>Image loaders <span>09</span></button>
+            <button type="button" role="tab" aria-selected={collection === "inline"} className={collection === "inline" ? "active" : ""} onClick={() => selectCollection("inline")}>Inline loaders <span>18</span></button>
+            <button type="button" role="tab" aria-selected={collection === "image"} className={collection === "image" ? "active" : ""} onClick={() => selectCollection("image")}>Image loaders <span>08</span></button>
         </div>
         <h2 id="gallery-title" className="sr-only">{collection === "text" ? "Text loaders" : collection === "inline" ? "Inline loaders" : "Image loaders"}</h2>
-        <div className="global-controls">
-          <button type="button" onClick={() => setPaused((value) => !value)}>{paused ? "▶ Play" : "Ⅱ Pause"}</button>
-          <button type="button" onClick={restart}>↻ Restart</button><span />
-          {speeds.map((value) => <button key={value} className={speed === value ? "active" : ""} type="button" onClick={() => setSpeed(value)}>{value}×</button>)}
-        </div>
+        <PlaybackControls paused={paused} speed={speed} onPauseToggle={() => setPaused((value) => !value)} onRestart={restart} onSpeedChange={setPlaybackSpeed} />
       </div>
       {collection === "text" ? <div className="loader-grid" role="tabpanel" aria-label="Text loaders">
         {loaders.map((loader, index) => <motion.button
-          className={`loader-card${selected === loader.id ? " selected" : ""}`}
+          className="loader-card"
           style={{ "--card-color": loaderColor } as React.CSSProperties}
           type="button"
           key={loader.id}
           onClick={() => selectLoader(loader)}
+          onPointerEnter={() => restartCard("text", loader.id)}
+          onPointerLeave={() => setHoveredCard(null)}
           initial={{ opacity: 0, y: 14 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: .15 }}
           transition={{ delay: (index % 4) * .04, ...spring }}
-          whileHover={{ y: -3 }}
+          whileHover={{ y: -3, transition: { ...spring, delay: 0 } }}
         >
           <span className="card-top"><span>{String(index + 1).padStart(2, "0")}</span><small>{loader.name}</small></span>
-          <span className="card-demo"><StreamingDemo key={`${loader.id}-${restartKey}-${theme}`} text={sampleText} variant={loader.id} color={loaderColor} speed={speed} paused={paused} phase={index * 12} /></span>
+          <span className="card-demo"><StreamingDemo key={`${loader.id}-${restartKey}-${cardCycles[`text-${loader.id}`] ?? 0}-${theme}`} text={sampleText} variant={loader.id} color={loaderColor} speed={speed} paused={paused} phase={index * 12} immediate={hoveredCard === `text-${loader.id}`} /></span>
           <span className="card-copy"><strong>{loader.name}</strong></span>
           <span className="card-arrow">↗</span>
         </motion.button>)}
       </div> : collection === "inline" ? <div className="inline-gallery" role="tabpanel" aria-label="Inline loaders" key={`inline-${restartKey}`}>
         {inlineLoaders.map((loader, index) => <motion.button
-          className={`inline-card${selectedInline === loader.id ? " selected" : ""}`}
+          className="inline-card"
           type="button"
           key={loader.id}
           onClick={() => { setSelectedInline(loader.id); restart(); }}
+          onPointerEnter={() => restartCard("inline", loader.id)}
+          onPointerLeave={() => setHoveredCard(null)}
           initial={{ opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: .3 }}
           transition={{ delay: (index % 3) * .05, ...spring }}
+          whileHover={{ y: -3, transition: { ...spring, delay: 0 } }}
         >
           <span className="inline-number">{String(index + 1).padStart(2, "0")}</span>
-          <div className="inline-demo"><InlineLoader variant={loader.id} size={28} speed={speed} color={loaderColor} paused={paused} /><span>{loader.copy}</span></div>
+          <div className="inline-demo"><InlineLoader key={`${loader.id}-${cardCycles[`inline-${loader.id}`] ?? 0}`} variant={loader.id} size={28} speed={speed} color={loaderColor} paused={paused} /><span>{loader.copy}</span></div>
           <div className="inline-copy"><strong>{loader.name}</strong></div>
         </motion.button>)}
       </div> : <div className="image-gallery" role="tabpanel" aria-label="Image loaders" key={`image-${restartKey}`}>
         {imageLoaders.map((loader, index) => <motion.button
-          className={`image-card${selectedImage === loader.id ? " selected" : ""}`}
+          className="image-card"
           type="button"
           key={loader.id}
           onClick={() => { setSelectedImage(loader.id); restart(); }}
+          onPointerEnter={() => restartCard("image", loader.id)}
+          onPointerLeave={() => setHoveredCard(null)}
           initial={{ opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: .25 }}
           transition={{ delay: (index % 4) * .05, ...spring }}
+          whileHover={{ y: -3, transition: { ...spring, delay: 0 } }}
         >
           <span className="image-number">{String(index + 1).padStart(2, "0")}</span>
-          <div className="image-demo"><ImageLoaderDemo variant={loader.id} speed={speed} color={loaderColor} paused={paused} /></div>
+          <div className="image-demo"><ImageLoaderDemo key={`${loader.id}-${cardCycles[`image-${loader.id}`] ?? 0}`} variant={loader.id} speed={speed} color={imageLoaderColor} paused={paused} /></div>
           <div className="image-copy"><strong>{loader.name}</strong></div>
         </motion.button>)}
       </div>}

@@ -1,6 +1,6 @@
 # generative-loaders
 
-Accessible React loading states designed for generative interfaces: sixteen animated text reveals, fourteen compact activity indicators, and nine image-generation placeholders.
+Accessible React loading states designed for generative interfaces: sixteen animated text reveals, eighteen compact activity indicators, and eight image-generation placeholders.
 
 [Live gallery](https://generativeloaders.com) · [Documentation](https://generativeloaders.com/docs) · [GitHub](https://github.com/kasturikhanke/generative-loaders) · [Report an issue](https://github.com/kasturikhanke/generative-loaders/issues/new/choose)
 
@@ -42,9 +42,9 @@ return <TextLoader text={text} variant="cascade" />;
 
 **Text:** `decode`, `typewriter`, `skeleton`, `cascade`, `focus`, `wipe`, `flip`, `redact`, `line`, `terminal`, `wave`, `dissolve`, `slice`, `tracking`, `coalesce`, `fragments`
 
-**Inline:** `glyph`, `matrix`, `orbit`, `ripple`, `signal`, `spark`, `rotor`, `pixel-drift`, `chomp`, `snake`, `fold`, `gravity`, `domino`, `aperture`
+**Inline:** `glyph`, `matrix`, `orbit`, `ripple`, `signal`, `spark`, `rotor`, `pixel-drift`, `chomp`, `snake`, `fold`, `gravity`, `domino`, `aperture`, `dot-pulse`, `vortex`, `halo`, `count-up`
 
-**Image:** `skeleton`, `bands`, `tiles`, `scan`, `pixel-grid`, `resolution`, `focus`, `shutter`, `contour`
+**Image:** `skeleton`, `bands`, `tiles`, `scan`, `pixel-grid`, `resolution`, `focus`, `shutter`
 
 ## Props
 

@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { act, cleanup, render, screen } from "@testing-library/react";
 import { renderToString } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { ImageLoader, InlineLoader, TextLoader, type ImageLoaderVariant, type InlineLoaderVariant, type TextLoaderVariant } from "../src/index.js";
@@ -24,10 +24,11 @@ const variants: TextLoaderVariant[] = [
 const inlineVariants: InlineLoaderVariant[] = [
   "glyph", "matrix", "orbit", "ripple", "signal", "spark", "rotor",
   "pixel-drift", "chomp", "snake", "fold", "gravity", "domino", "aperture",
+  "dot-pulse", "vortex", "halo", "count-up",
 ];
 
 const imageVariants: ImageLoaderVariant[] = [
-  "skeleton", "bands", "tiles", "scan", "pixel-grid", "resolution", "focus", "shutter", "contour",
+  "skeleton", "bands", "tiles", "scan", "pixel-grid", "resolution", "focus", "shutter",
 ];
 
 describe("ImageLoader", () => {
@@ -69,6 +70,7 @@ describe("ImageLoader", () => {
     const resolutionDelays = Array.from(container.querySelectorAll<HTMLElement>(".iml-resolution i"), (cell) => parseFloat(cell.style.getPropertyValue("--iml-delay")));
     expect(resolutionDelays[14]).toBeLessThan(resolutionDelays[0]);
   });
+
 });
 
 describe("InlineLoader", () => {
@@ -93,6 +95,41 @@ describe("InlineLoader", () => {
     rerender(<InlineLoader variant="aperture" />);
     expect(container.querySelectorAll(".il-aperture i")).toHaveLength(6);
     expect(container.querySelector(".il-aperture b")).toBeInTheDocument();
+  });
+
+  it("draws the rotor with three precise rings and a centered hub", () => {
+    const { container } = render(<InlineLoader variant="rotor" />);
+    expect(container.querySelectorAll(".il-rotor-ring")).toHaveLength(3);
+    expect(container.querySelector(".il-rotor-spokes")).toBeInTheDocument();
+    expect(container.querySelector(".il-rotor-hub")).toBeInTheDocument();
+  });
+
+  it("renders the dot studies with distinct compositions", () => {
+    const { container, rerender } = render(<InlineLoader variant="dot-pulse" />);
+    const pulseDots = container.querySelectorAll<HTMLElement>(".il-dot-pulse i");
+    expect(pulseDots).toHaveLength(4);
+    expect(pulseDots[0].style.getPropertyValue("--il-i")).toBe("3");
+    expect(pulseDots[3].style.getPropertyValue("--il-i")).toBe("0");
+
+    rerender(<InlineLoader variant="vortex" />);
+    expect(container.querySelectorAll(".il-vortex i")).toHaveLength(36);
+    expect(container.querySelector(".il-vortex b")).toBeInTheDocument();
+
+    rerender(<InlineLoader variant="halo" />);
+    expect(container.querySelectorAll(".il-halo i")).toHaveLength(8);
+  });
+
+  it("counts through every integer from zero to one hundred", () => {
+    vi.useFakeTimers();
+    const { container } = render(<InlineLoader variant="count-up" />);
+    const counter = container.querySelector(".il-count-up");
+
+    expect(counter).toHaveTextContent("0");
+    for (let value = 1; value <= 100; value += 1) {
+      act(() => vi.advanceTimersByTime(45));
+      expect(counter).toHaveTextContent(String(value));
+    }
+    vi.useRealTimers();
   });
 
   it("normalizes sizing, speed, color, pause, and classes", () => {

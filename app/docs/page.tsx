@@ -3,8 +3,8 @@ import { BrandMark } from "../components/brand-mark";
 import Link from "next/link";
 
 const textVariants = "decode · typewriter · skeleton · cascade · focus · wipe · flip · redact · line · terminal · wave · dissolve · slice · tracking · coalesce · fragments";
-const inlineVariants = "glyph · matrix · orbit · ripple · signal · spark · rotor · pixel-drift · chomp · snake · fold · gravity · domino · aperture";
-const imageVariants = "skeleton · bands · tiles · scan · pixel-grid · resolution · focus · shutter · contour";
+const inlineVariants = "glyph · matrix · orbit · ripple · signal · spark · rotor · pixel-drift · chomp · snake · fold · gravity · domino · aperture · dot-pulse · vortex · halo · count-up";
+const imageVariants = "skeleton · bands · tiles · scan · pixel-grid · resolution · focus · shutter";
 
 function Code({ children }: { children: string }) {
   return <pre className="docs-code"><code>{children}</code></pre>;

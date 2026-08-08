@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { useMemo, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from "react";
 import type { ImageLoaderProps, InlineLoaderProps, TextLoaderProps, TextLoaderVariant } from "./types.js";
 
 const scrambleGlyphs = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789()[]{}:;?/";
@@ -144,7 +144,15 @@ function FlipText({ text, start, active, speed }: VisualProps) {
 
 function RedactText({ text, start, revision, active, speed }: VisualProps) {
   const [stable, incoming] = splitAt(text, start);
-  return <span className="tl-copy tl-redact"><span>{stable}</span>{incoming && <span className="tl-redact-word" key={revision}><motion.span initial={active ? { opacity: 0 } : false} animate={{ opacity: 1 }} transition={{ delay: duration(.05, speed), duration: duration(.24, speed), ease: cushion }}>{incoming}</motion.span><motion.i initial={active ? { scaleX: 1, opacity: .18 } : false} animate={{ scaleX: 0, opacity: 0 }} transition={{ duration: duration(.28, speed), ease: cushion }} /></span>}</span>;
+  return <span className="tl-copy tl-redact"><span>{stable}</span>{incoming && <span className="tl-redact-word" key={revision}><motion.span
+    initial={active ? { opacity: .28, filter: "blur(.035em)" } : false}
+    animate={{ opacity: 1, filter: "blur(0em)" }}
+    transition={{ delay: duration(.08, speed), duration: duration(.42, speed), ease: cushion }}
+  >{incoming}</motion.span><motion.i
+    initial={active ? { scaleX: 1, opacity: .2 } : false}
+    animate={{ scaleX: [1, 1, .18, 0], opacity: [.2, .2, .14, 0] }}
+    transition={{ duration: duration(.48, speed), times: [0, .16, .78, 1], ease: cushion }}
+  /></span>}</span>;
 }
 
 function LineText({ text, start, revision, active, speed }: VisualProps) {
@@ -296,21 +304,55 @@ const matrixDots = Array.from({ length: 25 }, (_, index) => {
   return { index, distance: Math.abs(x - 2) + Math.abs(y - 2) };
 });
 
-function InlineVisual({ variant }: Pick<InlineLoaderProps, "variant">) {
+const vortexDots = [8, 12, 16].flatMap((count, ring) => Array.from({ length: count }, (_, index) => ({
+  id: `${ring}-${index}`,
+  x: 50 + Math.sin((index * (360 / count) + ring * 11) * Math.PI / 180) * (18 + ring * 14),
+  y: 50 - Math.cos((index * (360 / count) + ring * 11) * Math.PI / 180) * (18 + ring * 14),
+  delay: -(ring * .12 + index / count),
+  scale: 1 - ring * .12,
+})));
+
+function CountUpVisual({ active, speed }: { active: boolean; speed: number }) {
+  const [value, setValue] = useState(0);
+
+  useEffect(() => {
+    if (!active) return;
+    const delay = value === 100 ? 800 : 45;
+    const timer = window.setTimeout(() => {
+      setValue((current) => current === 100 ? 0 : current + 1);
+    }, delay / speed);
+    return () => window.clearTimeout(timer);
+  }, [active, speed, value]);
+
+  return <span className="il-count-up" data-value={value}>{value}</span>;
+}
+
+function InlineVisual({ variant, active, speed }: Pick<InlineLoaderProps, "variant"> & { active: boolean; speed: number }) {
   if (variant === "glyph") return <span className="il-glyph">{Array.from({ length: 9 }, (_, index) => <i key={index} style={{ "--il-i": index, "--il-delay": `${index * -.11}s` } as CSSProperties} />)}</span>;
   if (variant === "matrix") return <span className="il-matrix">{matrixDots.map(({ index, distance }) => <i key={index} style={{ "--il-i": index, "--il-distance": distance, "--il-delay": `${distance * -.13 - index * .008}s` } as CSSProperties} />)}</span>;
   if (variant === "orbit") return <span className="il-orbit"><i /><i /><i /><b /></span>;
   if (variant === "ripple") return <span className="il-ripple"><i /><i /><i /><b /></span>;
   if (variant === "signal") return <span className="il-signal">{Array.from({ length: 5 }, (_, index) => <i key={index} style={{ "--il-i": index, "--il-delay": `${index * -.12}s` } as CSSProperties} />)}</span>;
   if (variant === "spark") return <span className="il-spark"><i /><i /><i /></span>;
-  if (variant === "rotor") return <span className="il-rotor"><i /><i /><i /><b /></span>;
+  if (variant === "rotor") return <span className="il-rotor"><svg aria-hidden="true" viewBox="0 0 100 100">
+    <path className="il-rotor-spokes" d="M50 56 L50 22 M50 56 L79.45 73 M50 56 L20.55 73" />
+    <circle className="il-rotor-ring il-rotor-ring-top" cx="50" cy="18" r="13" />
+    <circle className="il-rotor-ring il-rotor-ring-right" cx="82.91" cy="75" r="13" />
+    <circle className="il-rotor-ring il-rotor-ring-left" cx="17.09" cy="75" r="13" />
+    <circle className="il-rotor-hub-glow" cx="50" cy="56" r="12" />
+    <circle className="il-rotor-hub" cx="50" cy="56" r="8.5" />
+  </svg></span>;
   if (variant === "pixel-drift") return <span className="il-pixel-drift">{Array.from({ length: 16 }, (_, index) => <i key={index} style={{ "--il-i": index, "--il-delay": `${((index % 4) + Math.floor(index / 4)) * -.1}s` } as CSSProperties} />)}</span>;
   if (variant === "chomp") return <span className="il-chomp"><b />{Array.from({ length: 4 }, (_, index) => <i key={index} style={{ "--il-delay": `${index * -.24}s` } as CSSProperties} />)}</span>;
   if (variant === "snake") return <span className="il-snake">{Array.from({ length: 7 }, (_, index) => <i key={index} style={{ "--il-i": index, "--il-scale": 1 - index * .075 } as CSSProperties} />)}<b /></span>;
   if (variant === "fold") return <span className="il-fold">{Array.from({ length: 4 }, (_, index) => <i key={index} style={{ "--il-delay": `${index * -.18}s` } as CSSProperties} />)}</span>;
   if (variant === "gravity") return <span className="il-gravity">{Array.from({ length: 5 }, (_, index) => <i key={index} style={{ "--il-angle": `${index * 72}deg`, "--il-delay": `${index * -.19}s` } as CSSProperties} />)}<b /></span>;
-  if (variant === "domino") return <span className="il-domino">{Array.from({ length: 5 }, (_, index) => <i key={index} style={{ "--il-delay": `${index * -.12}s` } as CSSProperties} />)}</span>;
-  return <span className="il-aperture">{Array.from({ length: 6 }, (_, index) => <i key={index} style={{ "--il-angle": `${index * 60}deg`, "--il-delay": `${index * -.08}s` } as CSSProperties} />)}<b /></span>;
+  if (variant === "domino") return <span className="il-domino">{Array.from({ length: 4 }, (_, index) => <i key={index} style={{ "--il-delay": `calc(var(--il-duration) * ${(3 - index) * -.115})` } as CSSProperties} />)}</span>;
+  if (variant === "aperture") return <span className="il-aperture">{Array.from({ length: 6 }, (_, index) => <i key={index} style={{ "--il-angle": `${index * 60}deg`, "--il-delay": `${index * -.08}s` } as CSSProperties} />)}<b /></span>;
+  if (variant === "dot-pulse") return <span className="il-dot-pulse">{Array.from({ length: 4 }, (_, index) => <i key={index} style={{ "--il-i": 3 - index } as CSSProperties} />)}</span>;
+  if (variant === "vortex") return <span className="il-vortex">{vortexDots.map((dot) => <i key={dot.id} style={{ "--il-x": `${dot.x}%`, "--il-y": `${dot.y}%`, "--il-delay": `${dot.delay}s`, "--il-scale": dot.scale } as CSSProperties} />)}<b /></span>;
+  if (variant === "halo") return <span className="il-halo">{Array.from({ length: 8 }, (_, index) => <i key={index} style={{ "--il-angle": `${index * 45}deg`, "--il-i": index } as CSSProperties} />)}</span>;
+  return <CountUpVisual active={active} speed={speed} />;
 }
 
 export function InlineLoader({
@@ -339,7 +381,7 @@ export function InlineLoader({
       "--il-size": typeof size === "number" ? `${size}px` : size,
       "--il-duration": `${1.2 / safeSpeed}s`,
     } as CSSProperties}
-  ><InlineVisual variant={variant} /></span>;
+  ><InlineVisual variant={variant} active={active} speed={safeSpeed} /></span>;
 }
 
 const imageTiles = Array.from({ length: 16 }, (_, index) => ({
@@ -362,8 +404,7 @@ function ImageVisual({ variant }: Pick<ImageLoaderProps, "variant">) {
   if (variant === "pixel-grid") return <span className="iml-pixel-grid">{imageTiles.map(({ index, x, y }) => <i key={index} style={{ "--iml-x": x, "--iml-y": y, "--iml-delay": `${(x + y - 6) * .09}s` } as CSSProperties} />)}</span>;
   if (variant === "resolution") return <span className="iml-resolution">{resolutionCells.map(({ index, distance, tone }) => <i key={index} style={{ "--iml-delay": `${(distance - 6) * .055}s`, "--iml-tone": `${tone}%` } as CSSProperties} />)}</span>;
   if (variant === "focus") return <span className="iml-focus"><i /><i /><i /><b /></span>;
-  if (variant === "shutter") return <span className="iml-shutter"><i /><i /><b /><em /></span>;
-  return <span className="iml-contour"><i /><i /><i /><i /><b /></span>;
+  return <span className="iml-shutter"><i /><i /><b /><em /></span>;
 }
 
 export function ImageLoader({
