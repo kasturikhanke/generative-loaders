@@ -64,6 +64,7 @@ export type ImageLoaderVariant =
   | "scan"
   | "pixel-grid"
   | "resolution"
+  | "coalesce"
   | "focus"
   | "shutter";
 

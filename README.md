@@ -87,7 +87,7 @@ export function StreamingAnswer() {
 
 **Inline:** `glyph`, `matrix`, `orbit`, `ripple`, `signal`, `spark`, `rotor`, `pixel-drift`, `chomp`, `snake`, `fold`, `gravity`, `domino`, `aperture`, `dot-pulse`, `vortex`, `halo`, `count-up`
 
-**Image:** `skeleton`, `bands`, `tiles`, `scan`, `pixel-grid`, `resolution`, `focus`, `shutter`
+**Image:** `skeleton`, `bands`, `tiles`, `scan`, `pixel-grid`, `resolution`, `coalesce`, `focus`, `shutter`
 
 See every variant, speed control, and usage context in the [live gallery](https://generativeloaders.com).
 

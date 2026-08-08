@@ -28,7 +28,7 @@ const inlineVariants: InlineLoaderVariant[] = [
 ];
 
 const imageVariants: ImageLoaderVariant[] = [
-  "skeleton", "bands", "tiles", "scan", "pixel-grid", "resolution", "focus", "shutter",
+  "skeleton", "bands", "tiles", "scan", "pixel-grid", "resolution", "coalesce", "focus", "shutter",
 ];
 
 describe("ImageLoader", () => {
@@ -69,6 +69,16 @@ describe("ImageLoader", () => {
     rerender(<ImageLoader variant="resolution" />);
     const resolutionDelays = Array.from(container.querySelectorAll<HTMLElement>(".iml-resolution i"), (cell) => parseFloat(cell.style.getPropertyValue("--iml-delay")));
     expect(resolutionDelays[14]).toBeLessThan(resolutionDelays[0]);
+  });
+
+  it("gathers coalesce from independently positioned particles", () => {
+    const { container } = render(<ImageLoader variant="coalesce" />);
+    const particles = container.querySelectorAll<HTMLElement>(".iml-coalesce i");
+
+    expect(particles).toHaveLength(24);
+    expect(particles[0].style.getPropertyValue("--iml-start-x")).not.toBe(particles[1].style.getPropertyValue("--iml-start-x"));
+    expect(particles[0].style.getPropertyValue("--iml-particle-size")).not.toBe(particles[1].style.getPropertyValue("--iml-particle-size"));
+    expect(particles[0].style.getPropertyValue("--iml-mid-x")).toContain("%");
   });
 
 });

@@ -465,6 +465,12 @@
 .iml-resolution i { position:relative; width:100%; height:100%; border-radius:16%; background:color-mix(in srgb,currentColor var(--iml-tone),transparent); opacity:.1; transform:scale(.9); animation:iml-resolution var(--iml-duration) cubic-bezier(.4,0,.2,1) infinite; animation-delay:var(--iml-delay); }
 @keyframes iml-resolution { 0%,18%,100% { opacity:.1; transform:scale(.9); filter:blur(.35px); } 46%,70% { opacity:.82; transform:scale(1); filter:blur(0); } 84% { opacity:.26; transform:scale(.96); filter:blur(0); } }
 
+.iml-coalesce { inset:7%!important; }
+.iml-coalesce i { left:var(--iml-start-x); top:var(--iml-start-y); width:var(--iml-particle-size); aspect-ratio:1; border-radius:50%; background:currentColor; animation:iml-coalesce-flow calc(var(--iml-duration) * .88) linear infinite; animation-delay:var(--iml-delay); }
+.iml-coalesce b { left:48.4%; top:48.4%; width:3.2%; aspect-ratio:1; border-radius:50%; background:currentColor; box-shadow:0 0 calc(var(--iml-size) * .035) color-mix(in srgb,currentColor 22%,transparent); animation:iml-coalesce-core calc(var(--iml-duration) * .88) ease-in-out infinite; }
+@keyframes iml-coalesce-flow { 0% { left:var(--iml-start-x); top:var(--iml-start-y); opacity:0; transform:translate(-50%,-50%) scale(.35); } 14% { opacity:.26; transform:translate(-50%,-50%) scale(.62); } 56% { left:var(--iml-mid-x); top:var(--iml-mid-y); opacity:var(--iml-particle-opacity); transform:translate(-50%,-50%) scale(.86); } 86% { left:var(--iml-end-x); top:var(--iml-end-y); opacity:var(--iml-particle-opacity); transform:translate(-50%,-50%) scale(1); } 100% { left:50%; top:50%; opacity:0; transform:translate(-50%,-50%) scale(.12); } }
+@keyframes iml-coalesce-core { 0%,100% { opacity:.46; transform:scale(.76); } 82% { opacity:.9; transform:scale(1.08); } }
+
 .iml-focus i { border:1px solid currentColor; animation:iml-focus var(--iml-duration) cubic-bezier(.22,1,.36,1) infinite; }
 .iml-focus i:nth-child(1) { inset:8%; }
 .iml-focus i:nth-child(2) { inset:21%; animation-delay:calc(var(--iml-duration) * -.07); }

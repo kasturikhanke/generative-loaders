@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Added the `coalesce` image loader, which gathers organic fragments into a unified image plane.
+
 ## 0.1.1
 
 - Added the `count-up` inline loader, which displays every integer from 0 through 100.

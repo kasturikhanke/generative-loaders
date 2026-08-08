@@ -396,6 +396,27 @@ const resolutionCells = Array.from({ length: 36 }, (_, index) => {
   return { index, distance: Math.abs(x - 2.5) + Math.abs(y - 2.5), tone: 28 + ((x * 13 + y * 9) % 34) };
 });
 
+const coalesceParticles = Array.from({ length: 24 }, (_, index) => {
+  const angle = index * 137.508 * Math.PI / 180;
+  const radiusX = 42 + ((index * 7) % 8);
+  const radiusY = 38 + ((index * 11) % 10);
+  const startX = 50 + Math.cos(angle) * radiusX;
+  const startY = 50 + Math.sin(angle) * radiusY;
+  const bend = ((index % 5) - 2) * 1.8;
+  return {
+    index,
+    startX,
+    startY,
+    midX: startX * .46 + 50 * .54 - Math.sin(angle) * bend,
+    midY: startY * .46 + 50 * .54 + Math.cos(angle) * bend,
+    endX: 50 + Math.cos(angle * 1.7) * (1.2 + index % 3 * .55),
+    endY: 50 + Math.sin(angle * 1.7) * (1.2 + index % 3 * .55),
+    size: 1.35 + ((index * 7) % 5) * .32,
+    delay: -((index * 11) % 24) / 24,
+    opacity: .42 + (index % 4) * .12,
+  };
+});
+
 function ImageVisual({ variant }: Pick<ImageLoaderProps, "variant">) {
   if (variant === "skeleton") return <span className="iml-skeleton"><i /><b /></span>;
   if (variant === "bands") return <span className="iml-bands"><i /><i /><i /><b /></span>;
@@ -403,6 +424,7 @@ function ImageVisual({ variant }: Pick<ImageLoaderProps, "variant">) {
   if (variant === "scan") return <span className="iml-scan"><i /><b /><em /></span>;
   if (variant === "pixel-grid") return <span className="iml-pixel-grid">{imageTiles.map(({ index, x, y }) => <i key={index} style={{ "--iml-x": x, "--iml-y": y, "--iml-delay": `${(x + y - 6) * .09}s` } as CSSProperties} />)}</span>;
   if (variant === "resolution") return <span className="iml-resolution">{resolutionCells.map(({ index, distance, tone }) => <i key={index} style={{ "--iml-delay": `${(distance - 6) * .055}s`, "--iml-tone": `${tone}%` } as CSSProperties} />)}</span>;
+  if (variant === "coalesce") return <span className="iml-coalesce">{coalesceParticles.map(({ index, startX, startY, midX, midY, endX, endY, size, delay, opacity }) => <i key={index} style={{ "--iml-start-x": `${startX}%`, "--iml-start-y": `${startY}%`, "--iml-mid-x": `${midX}%`, "--iml-mid-y": `${midY}%`, "--iml-end-x": `${endX}%`, "--iml-end-y": `${endY}%`, "--iml-particle-size": `${size}%`, "--iml-delay": `calc(var(--iml-duration) * ${delay})`, "--iml-particle-opacity": opacity } as CSSProperties} />)}<b /></span>;
   if (variant === "focus") return <span className="iml-focus"><i /><i /><i /><b /></span>;
   return <span className="iml-shutter"><i /><i /><b /><em /></span>;
 }

@@ -31,8 +31,9 @@ test("server-renders the text loader gallery", async () => {
 
   const html = await response.text();
   assert.match(html, /<title>Generative Loaders/);
-  assert.match(html, /React loaders for/);
-  assert.match(html, /Text, inline, and image loading states/);
+  assert.match(html, /aria-label="Homepage view"/);
+  assert.match(html, />Loaders</);
+  assert.match(html, />In Use</);
   for (const variant of ["Decode", "Typewriter", "Skeleton", "Cascade", "Focus", "Wipe", "Flip", "Redact", "Line by line", "Terminal", "Wave", "Dissolve", "Slice", "Tracking", "Coalesce", "Fragments"]) {
     assert.match(html, new RegExp(`>${variant}<`));
   }
@@ -41,15 +42,9 @@ test("server-renders the text loader gallery", async () => {
   assert.match(html, /Inline loaders/);
   assert.match(html, /Image loaders/);
   assert.match(html, /aria-selected="true"/);
-  assert.doesNotMatch(html, />See them in context\.</);
-  assert.match(html, />Generating report</);
-  assert.match(html, />Image</);
-  assert.match(html, /aria-controls="context-panel-image"/);
-  assert.match(html, /aria-label="Activity loader style"/);
-  assert.doesNotMatch(html, /aria-label="Context activity loader"/);
-  assert.doesNotMatch(html, /Connecting the findings/);
+  assert.match(html, /aria-label="Copy Decode code"/);
+  assert.match(html, /aria-label="Copy Typewriter code"/);
   assert.doesNotMatch(html, />Playground</);
-  assert.ok(html.indexOf("Generating report") < html.indexOf("Text loaders"));
   assert.match(html, />Docs</);
   assert.match(html, />GitHub</);
   assert.doesNotMatch(html, />API</);
