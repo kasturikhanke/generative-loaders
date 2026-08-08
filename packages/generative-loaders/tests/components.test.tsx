@@ -55,6 +55,20 @@ describe("ImageLoader", () => {
     render(<ImageLoader variant="scan" />);
     expect(screen.getByRole("status")).toHaveAttribute("data-paused", "true");
   });
+
+  it("sequences image cells in the direction their result resolves", () => {
+    const { container, rerender } = render(<ImageLoader variant="tiles" />);
+    const tileDelays = Array.from(container.querySelectorAll<HTMLElement>(".iml-tiles i"), (cell) => parseFloat(cell.style.getPropertyValue("--iml-delay")));
+    expect(tileDelays[5]).toBeLessThan(tileDelays[0]);
+
+    rerender(<ImageLoader variant="pixel-grid" />);
+    const pixelDelays = Array.from(container.querySelectorAll<HTMLElement>(".iml-pixel-grid i"), (cell) => parseFloat(cell.style.getPropertyValue("--iml-delay")));
+    expect(pixelDelays[0]).toBeLessThan(pixelDelays.at(-1)!);
+
+    rerender(<ImageLoader variant="resolution" />);
+    const resolutionDelays = Array.from(container.querySelectorAll<HTMLElement>(".iml-resolution i"), (cell) => parseFloat(cell.style.getPropertyValue("--iml-delay")));
+    expect(resolutionDelays[14]).toBeLessThan(resolutionDelays[0]);
+  });
 });
 
 describe("InlineLoader", () => {
@@ -164,6 +178,16 @@ describe("TextLoader", () => {
     rerender(<TextLoader text="Loading words" variant="skeleton" />);
     expect(container.querySelector(".tl-skeleton")).not.toBeInTheDocument();
     expect(container.querySelector(".tl-skeleton-stream")).toHaveTextContent("Loading words");
+  });
+
+  it("assembles dissolve glyphs from a rightward particle cloud", () => {
+    const { container } = render(<TextLoader text="Dust" variant="dissolve" />);
+    const glyphs = container.querySelectorAll(".tl-dissolve-char");
+    const particles = glyphs[0]?.querySelectorAll("i") ?? [];
+
+    expect(glyphs).toHaveLength(4);
+    expect(particles).toHaveLength(6);
+    expect(particles[0]).toHaveStyle("transform: translateX(30px) translateY(-11px) scale(0.35)");
   });
 
   it("immediately renders received text when reduced motion is requested", () => {

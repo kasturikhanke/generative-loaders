@@ -6,6 +6,7 @@ import type { ImageLoaderProps, InlineLoaderProps, TextLoaderProps, TextLoaderVa
 
 const scrambleGlyphs = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789()[]{}:;?/";
 const particleOffsets = [[-16, -9], [13, -13], [-9, 12], [17, 7], [1, -18]];
+const dissolveParticles = [[30, -11], [21, -6], [36, -1], [16, 4], [28, 9], [12, 13]];
 const fragmentOffsets = [[-8, -6], [8, -5], [-7, 7], [7, 6]];
 // Keep the beginning of a reveal calm. A very steep ease-out makes the first
 // frame of each received word feel like a pop, even when the total duration is
@@ -172,13 +173,24 @@ function WaveText({ text, start, active, speed }: VisualProps) {
 }
 
 function DissolveText({ text, start, active, speed }: VisualProps) {
-  return <span className="tl-copy tl-dissolve">{charNodes(text, (char, index) => <motion.span
-    className="tl-char"
-    key={index}
-    initial={active && index >= start ? { opacity: .18, filter: "blur(2px)", scale: .86 } : false}
-    animate={{ opacity: 1, filter: "blur(0px)", scale: 1 }}
-    transition={{ duration: duration(.28, speed), delay: stagger(index, start, speed), ease: cushion }}
-  >{char === " " ? "\u00a0" : char}</motion.span>)}</span>;
+  return <span className="tl-copy tl-dissolve">{charNodes(text, (char, index) => {
+    const fresh = active && index >= start && char !== " ";
+    const delay = duration(Math.min(.2, Math.max(0, index - start) * .018), speed);
+    return <span className="tl-dissolve-char" key={index}>
+      <motion.b
+        initial={fresh ? { opacity: .05, filter: "blur(3px)", clipPath: "inset(0 100% 0 0)" } : false}
+        animate={{ opacity: 1, filter: "blur(0px)", clipPath: "inset(0 0% 0 0)" }}
+        transition={{ duration: duration(.46, speed), delay, ease: cushion }}
+      >{char === " " ? "\u00a0" : char}</motion.b>
+      {fresh && dissolveParticles.map(([x, y], particle) => <motion.i
+        aria-hidden="true"
+        key={particle}
+        initial={{ opacity: 0, x, y, scale: .35 }}
+        animate={{ opacity: [0, .72, 0], x: [x, x * .28, 0], y: [y, y * .3, 0], scale: [.35, 1, .12] }}
+        transition={{ duration: duration(.44, speed), delay: delay + duration(particle * .012, speed), ease: cushion, times: [0, .42, 1] }}
+      />)}
+    </span>;
+  })}</span>;
 }
 
 function SliceText({ text, start, active, speed }: VisualProps) {
@@ -294,7 +306,7 @@ function InlineVisual({ variant }: Pick<InlineLoaderProps, "variant">) {
   if (variant === "rotor") return <span className="il-rotor"><i /><i /><i /><b /></span>;
   if (variant === "pixel-drift") return <span className="il-pixel-drift">{Array.from({ length: 16 }, (_, index) => <i key={index} style={{ "--il-i": index, "--il-delay": `${((index % 4) + Math.floor(index / 4)) * -.1}s` } as CSSProperties} />)}</span>;
   if (variant === "chomp") return <span className="il-chomp"><b />{Array.from({ length: 4 }, (_, index) => <i key={index} style={{ "--il-delay": `${index * -.24}s` } as CSSProperties} />)}</span>;
-  if (variant === "snake") return <span className="il-snake">{Array.from({ length: 7 }, (_, index) => <i key={index} style={{ "--il-delay": `${index * -.1}s`, "--il-scale": 1 - index * .085 } as CSSProperties} />)}<b /></span>;
+  if (variant === "snake") return <span className="il-snake">{Array.from({ length: 7 }, (_, index) => <i key={index} style={{ "--il-i": index, "--il-scale": 1 - index * .075 } as CSSProperties} />)}<b /></span>;
   if (variant === "fold") return <span className="il-fold">{Array.from({ length: 4 }, (_, index) => <i key={index} style={{ "--il-delay": `${index * -.18}s` } as CSSProperties} />)}</span>;
   if (variant === "gravity") return <span className="il-gravity">{Array.from({ length: 5 }, (_, index) => <i key={index} style={{ "--il-angle": `${index * 72}deg`, "--il-delay": `${index * -.19}s` } as CSSProperties} />)}<b /></span>;
   if (variant === "domino") return <span className="il-domino">{Array.from({ length: 5 }, (_, index) => <i key={index} style={{ "--il-delay": `${index * -.12}s` } as CSSProperties} />)}</span>;
@@ -345,10 +357,10 @@ const resolutionCells = Array.from({ length: 36 }, (_, index) => {
 function ImageVisual({ variant }: Pick<ImageLoaderProps, "variant">) {
   if (variant === "skeleton") return <span className="iml-skeleton"><i /><b /></span>;
   if (variant === "bands") return <span className="iml-bands"><i /><i /><i /><b /></span>;
-  if (variant === "tiles") return <span className="iml-tiles">{imageTiles.map(({ index, x, y }) => <i key={index} style={{ "--iml-i": index, "--iml-delay": `${(Math.abs(x - 1.5) + Math.abs(y - 1.5)) * -.12}s` } as CSSProperties} />)}</span>;
+  if (variant === "tiles") return <span className="iml-tiles">{imageTiles.map(({ index, x, y }) => <i key={index} style={{ "--iml-i": index, "--iml-delay": `${(Math.abs(x - 1.5) + Math.abs(y - 1.5) - 4) * .12}s` } as CSSProperties} />)}</span>;
   if (variant === "scan") return <span className="iml-scan"><i /><b /><em /></span>;
-  if (variant === "pixel-grid") return <span className="iml-pixel-grid">{imageTiles.map(({ index, x, y }) => <i key={index} style={{ "--iml-x": x, "--iml-y": y, "--iml-delay": `${(x + y) * -.09}s` } as CSSProperties} />)}</span>;
-  if (variant === "resolution") return <span className="iml-resolution">{resolutionCells.map(({ index, distance, tone }) => <i key={index} style={{ "--iml-delay": `${distance * -.055}s`, "--iml-tone": `${tone}%` } as CSSProperties} />)}</span>;
+  if (variant === "pixel-grid") return <span className="iml-pixel-grid">{imageTiles.map(({ index, x, y }) => <i key={index} style={{ "--iml-x": x, "--iml-y": y, "--iml-delay": `${(x + y - 6) * .09}s` } as CSSProperties} />)}</span>;
+  if (variant === "resolution") return <span className="iml-resolution">{resolutionCells.map(({ index, distance, tone }) => <i key={index} style={{ "--iml-delay": `${(distance - 6) * .055}s`, "--iml-tone": `${tone}%` } as CSSProperties} />)}</span>;
   if (variant === "focus") return <span className="iml-focus"><i /><i /><i /><b /></span>;
   if (variant === "shutter") return <span className="iml-shutter"><i /><i /><b /><em /></span>;
   return <span className="iml-contour"><i /><i /><i /><i /><b /></span>;

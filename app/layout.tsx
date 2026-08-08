@@ -10,6 +10,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://generative-loaders.kkasturi2502.chatgpt.site"),
   title: "Generative Loaders — text, inline, and image loaders for React",
   description: "Animated React loaders for text, inline, and image generation states.",
+  icons: { icon: [{ url: "/favicon.svg", type: "image/svg+xml" }], shortcut: "/favicon.svg" },
   openGraph: {
     title: "Generative Loaders",
     description: "Animated React loaders for text, inline, and image generation states.",
