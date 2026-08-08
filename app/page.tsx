@@ -209,7 +209,7 @@ function SiteFooter() {
   return <footer className="footer-editorial">
     <div className="footer-editorial-inner shell">
       <div className="footer-editorial-intro">
-        <nav aria-label="Footer resources"><a href="#contexts">Examples</a><a href="#loaders">Loaders</a><a href="/docs">Documentation</a></nav>
+        <nav aria-label="Footer resources"><a href="#playground">Playground</a><a href="/docs">Documentation</a></nav>
       </div>
 
       <motion.div
@@ -234,7 +234,7 @@ function SiteFooter() {
 
 export default function Home() {
   const [theme, setTheme] = useState<Theme>("dark");
-  const [collection, setCollection] = useState<LoaderCollection>("text");
+  const [collection, setCollection] = useState<LoaderCollection>("inline");
   const [contextFormat, setContextFormat] = useState<ContextFormat>("button");
   const [selected, setSelected] = useState<TextLoaderVariant>("decode");
   const [selectedInline, setSelectedInline] = useState<InlineLoaderVariant>("glyph");
@@ -283,12 +283,19 @@ export default function Home() {
 
   function selectLoader(loader: (typeof loaders)[number]) {
     setSelected(loader.id);
+    setContextFormat("chat");
     restart();
   }
 
   function selectCollection(next: LoaderCollection) {
-    if (next === collection) return;
     setCollection(next);
+    setContextFormat(next === "text" ? "chat" : next === "image" ? "image" : "button");
+    restart();
+  }
+
+  function selectContext(format: ContextFormat) {
+    setContextFormat(format);
+    setCollection(format === "chat" ? "text" : format === "image" ? "image" : "inline");
     restart();
   }
 
@@ -300,17 +307,38 @@ export default function Home() {
   return <main id="top">
     <nav className="nav shell">
       <a className="brand" href="#top"><BrandMark />Generative Loaders</a>
-      <div className="nav-links"><a href="#contexts">In context</a><a href="#loaders">Loaders</a><a href="/docs">Docs</a></div>
+      <div className="nav-links"><a href="#playground">Playground</a><a href="/docs">Docs</a></div>
       <div className="nav-actions"><GitHubButton compact /><button className="theme-toggle" type="button" onClick={toggleTheme} aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`} title={`Switch to ${theme === "light" ? "dark" : "light"} mode`}><ThemeIcon theme={theme} /></button><a className="nav-install nav-docs-mobile" href="/docs">Docs <span>↗</span></a></div>
     </nav>
 
-    <header className="hero shell">
-      <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .08, ...spring }}>React loaders for<br /><span>generative UI.</span></motion.h1>
-      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: .18 }}>Text, inline, and image loading states.</motion.p>
-      <motion.div className="install-command" id="install" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .3, ...spring }}><code>{install}</code><CopyButton value={install} /></motion.div>
-    </header>
+    <section className="workbench shell" id="playground" aria-label="Generative loader playground">
+      <aside className="loader-browser">
+        <div className="workbench-intro">
+          <motion.p className="workbench-kicker" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: .08 }}>React loading states</motion.p>
+          <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .1, ...spring }}>Make waiting feel<br />like <span>progress.</span></motion.h1>
+          <motion.p className="workbench-summary" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: .18 }}>Choose a loader, then see it working in a real interface.</motion.p>
+          <motion.div className="install-command" id="install" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .24, ...spring }}><code>{install}</code><CopyButton value={install} /></motion.div>
+        </div>
 
-    <section className="contexts shell" id="contexts" aria-label="Loader examples in context">
+        <div className="loader-selector">
+          <div className="segmented-control collection-tabs" role="tablist" aria-label="Loader collection">
+            <button type="button" role="tab" aria-selected={collection === "text"} className={collection === "text" ? "active" : ""} onClick={() => selectCollection("text")}>Text <span>16</span></button>
+            <button type="button" role="tab" aria-selected={collection === "inline"} className={collection === "inline" ? "active" : ""} onClick={() => selectCollection("inline")}>Inline <span>18</span></button>
+            <button type="button" role="tab" aria-selected={collection === "image"} className={collection === "image" ? "active" : ""} onClick={() => selectCollection("image")}>Image <span>08</span></button>
+          </div>
+          <div className="loader-selector-heading"><span>Select a loader</span><small>{collection === "text" ? loaders.find((loader) => loader.id === selected)?.name : collection === "inline" ? inlineLoaders.find((loader) => loader.id === selectedInline)?.name : imageLoaders.find((loader) => loader.id === selectedImage)?.name}</small></div>
+          <div className="loader-selector-list" role="listbox" aria-label={`${collection} loader variants`}>
+            {collection === "text" ? loaders.map((loader) => <button type="button" role="option" aria-selected={selected === loader.id} className={selected === loader.id ? "selected" : ""} key={loader.id} onClick={() => selectLoader(loader)}>
+              <span className="selector-preview selector-text"><TextLoader key={`${loader.id}-${restartKey}-${pickerCycle}`} text={loader.name} variant={loader.id} color={loaderColor} speed={speed} paused={paused} /></span><span>{loader.name}</span>
+            </button>) : collection === "inline" ? inlineLoaders.map((loader) => <button type="button" role="option" aria-selected={selectedInline === loader.id} className={selectedInline === loader.id ? "selected" : ""} key={loader.id} onClick={() => { setSelectedInline(loader.id); setContextFormat(contextFormat === "page" ? "page" : "button"); restart(); }}>
+              <span className="selector-preview"><InlineLoader key={`${loader.id}-${restartKey}`} variant={loader.id} size={18} speed={speed} color={loaderColor} paused={paused} /></span><span>{loader.name}</span>
+            </button>) : imageLoaders.map((loader) => <button type="button" role="option" aria-selected={selectedImage === loader.id} className={selectedImage === loader.id ? "selected" : ""} key={loader.id} onClick={() => { setSelectedImage(loader.id); setContextFormat("image"); restart(); }}>
+              <span className="selector-preview selector-image"><ImageLoader variant={loader.id} size={34} radius={6} speed={speed} color={imageLoaderColor} paused={paused} /></span><span>{loader.name}</span>
+            </button>)}
+          </div>
+        </div>
+      </aside>
+
       <div className="context-panel">
         <div className="context-sidebar">
           <div className="segmented-control context-tabs" role="tablist" aria-label="Example format">
@@ -320,7 +348,7 @@ export default function Home() {
               aria-selected={contextFormat === format}
               className={contextFormat === format ? "active" : ""}
               key={format}
-              onClick={() => { setContextFormat(format); restart(); }}
+              onClick={() => selectContext(format)}
               role="tab"
               type="button"
             ><span>{String(index + 1).padStart(2, "0")}</span>{format[0].toUpperCase() + format.slice(1)}</button>)}
@@ -411,48 +439,6 @@ export default function Home() {
               </div>
             </motion.div>}
           </AnimatePresence>
-        </div>
-        <div className="context-pickers">
-          {(contextFormat === "button" || contextFormat === "page") && <div className="context-picker-group">
-            <div className="context-picker-heading"><div><span>Activity loader</span></div></div>
-            <div className="context-loader-options" role="listbox" aria-label="Activity loader style">
-              {inlineLoaders.map((loader) => <button
-                aria-selected={selectedInline === loader.id}
-                className={selectedInline === loader.id ? "selected" : ""}
-                key={loader.id}
-                onClick={() => { setSelectedInline(loader.id); restart(); }}
-                role="option"
-                type="button"
-              ><span aria-hidden="true" className="context-loader-swatch"><InlineLoader key={`${loader.id}-${restartKey}`} variant={loader.id} size={19} speed={speed} color={loaderColor} paused={paused} /></span><span>{loader.name}</span></button>)}
-            </div>
-          </div>}
-          {contextFormat === "chat" && <div className="context-picker-group context-text-picker">
-            <div className="context-picker-heading"><div><span>Streaming effect</span><p>Preview how streamed words enter the conversation.</p></div><small>{loaders.find((loader) => loader.id === selected)?.name}</small></div>
-            <div className="context-text-options" role="listbox" aria-label="Text animation style">
-              {loaders.map((loader) => <button
-                aria-label={loader.name}
-                aria-selected={selected === loader.id}
-                className={selected === loader.id ? "selected" : ""}
-                key={loader.id}
-                onClick={() => { setSelected(loader.id); restart(); }}
-                role="option"
-                type="button"
-              ><span aria-hidden="true" className="context-text-swatch"><TextLoader key={`${loader.id}-${restartKey}-${pickerCycle}-picker`} text={loader.name} variant={loader.id} color={loaderColor} speed={speed} paused={paused} /></span></button>)}
-            </div>
-          </div>}
-          {contextFormat === "image" && <div className="context-picker-group context-image-picker">
-            <div className="context-picker-heading"><div><span>Image transition</span><p>Choose how the generated result resolves into view.</p></div><small>{imageLoaders.find((loader) => loader.id === selectedImage)?.name}</small></div>
-            <div className="context-image-options" role="listbox" aria-label="Image loader style">
-              {imageLoaders.map((loader) => <button
-                aria-selected={selectedImage === loader.id}
-                className={selectedImage === loader.id ? "selected" : ""}
-                key={loader.id}
-                onClick={() => { setSelectedImage(loader.id); restart(); }}
-                role="option"
-                type="button"
-              ><span aria-hidden="true" className="context-image-swatch"><ImageLoader variant={loader.id} size={42} radius={7} speed={speed} color={imageLoaderColor} paused={paused} /></span><span>{loader.name}</span></button>)}
-            </div>
-          </div>}
         </div>
       </div>
     </section>
