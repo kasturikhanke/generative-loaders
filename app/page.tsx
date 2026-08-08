@@ -1,7 +1,7 @@
 "use client";
 
 import { ImageLoader, InlineLoader, TextLoader, type ImageLoaderVariant, type InlineLoaderVariant, type TextLoaderVariant } from "generative-loaders";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
 import { BrandMark } from "./components/brand-mark";
 import { GitHubButton } from "./components/github-button";
@@ -58,6 +58,18 @@ const imageLoaders: Array<{ id: ImageLoaderVariant; name: string }> = [
   { id: "focus", name: "Focus" },
   { id: "shutter", name: "Shutter" },
 ];
+
+const resolveCells = Array.from({ length: 16 }, (_, index) => ({
+  index,
+  x: index % 4,
+  y: Math.floor(index / 4),
+}));
+
+const resolutionResolveCells = Array.from({ length: 36 }, (_, index) => ({
+  index,
+  x: index % 6,
+  y: Math.floor(index / 6),
+}));
 
 const speeds = [0.75, 1, 1.5];
 const spring = { type: "spring" as const, stiffness: 340, damping: 30 };
@@ -180,6 +192,56 @@ function StreamingDemo({ text, variant, color, speed, paused, phase = 0, immedia
   </motion.span>;
 }
 
+function ImageResolveVisual({ variant }: { variant: ImageLoaderVariant }) {
+  if (variant === "skeleton") return <span className="image-resolve-preview" />;
+  if (variant === "bands") return <span className="image-resolve-bands">{Array.from({ length: 3 }, (_, index) => <i key={index} style={{ "--resolve-i": index, "--resolve-position": `${index * 50}%`, "--resolve-offset": index % 2 === 0 ? "-12%" : "12%" } as React.CSSProperties} />)}</span>;
+  if (variant === "tiles") return <span className="image-resolve-tiles">{resolveCells.map(({ index, x, y }) => {
+    const ring = Math.abs(x - 1.5) + Math.abs(y - 1.5) - 1;
+    return <i key={index} style={{ "--resolve-position-x": `${x * 33.333}%`, "--resolve-position-y": `${y * 33.333}%`, "--resolve-ring": ring } as React.CSSProperties} />;
+  })}</span>;
+  if (variant === "pixel-grid") return <span className="image-resolve-pixel-grid">{resolveCells.map(({ index, x, y }) => <i key={index} style={{ "--resolve-x": x, "--resolve-y": y, "--resolve-position-x": `${x * 33.333}%`, "--resolve-position-y": `${y * 33.333}%`, "--resolve-delay": `${(x + y) * .045}s` } as React.CSSProperties} />)}</span>;
+  if (variant === "scan") return <span className="image-resolve-scan"><i /><b /></span>;
+  if (variant === "resolution") return <span className="image-resolve-resolution">{resolutionResolveCells.map(({ index, x, y }) => {
+    const ring = Math.abs(x - 2.5) + Math.abs(y - 2.5) - 1;
+    return <i key={index} style={{ "--resolve-position-x": `${x * 20}%`, "--resolve-position-y": `${y * 20}%`, "--resolve-ring": ring } as React.CSSProperties} />;
+  })}</span>;
+  if (variant === "focus") return <span className="image-resolve-focus" />;
+  return <span className="image-resolve-shutter"><i /><i /></span>;
+}
+
+function ImageLoaderDemo({ variant, color, speed, paused }: {
+  variant: ImageLoaderVariant;
+  color: string;
+  speed: number;
+  paused: boolean;
+}) {
+  const [phase, setPhase] = useState<"loading" | "resolving" | "loaded">("loading");
+  const reduceMotion = Boolean(useReducedMotion());
+  const visiblePhase = reduceMotion ? "loaded" : phase;
+  const isDirectionalResolve = variant === "shutter";
+  const resolveDuration = isDirectionalResolve ? 1.15 : 1.05;
+
+  useEffect(() => {
+    if (paused || reduceMotion) return;
+    const nextPhase = phase === "loading" ? "resolving" : phase === "resolving" ? "loaded" : "loading";
+    const phaseDuration = phase === "loading" ? (isDirectionalResolve ? 2350 : 2300) : phase === "resolving" ? resolveDuration * 1000 : 1800;
+    const timer = window.setTimeout(() => setPhase(nextPhase), phaseDuration / speed);
+    return () => window.clearTimeout(timer);
+  }, [isDirectionalResolve, paused, phase, reduceMotion, resolveDuration, speed]);
+
+  return <span className="image-demo-stage" data-phase={visiblePhase} data-paused={paused ? "true" : "false"} data-variant={variant}>
+    <AnimatePresence initial={false} mode="sync">
+      {visiblePhase === "loading" && <motion.span className="image-loader-layer" key="loader" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, scale: isDirectionalResolve ? 1 : .99 }} transition={{ duration: (isDirectionalResolve ? .22 : .3) / speed, ease: [0.65, 0, 0.35, 1] }}>
+        <ImageLoader variant={variant} size="100%" radius={13} speed={speed} color={color} paused={paused} label={`${variant} image generation`} />
+      </motion.span>}
+      {(visiblePhase === "resolving" || visiblePhase === "loaded") && <motion.span className={`image-resolve-layer image-resolve-layer-${variant}`} key="resolving" role={visiblePhase === "resolving" ? "status" : undefined} aria-label={visiblePhase === "resolving" ? "Resolving image" : undefined} initial={{ opacity: isDirectionalResolve ? 1 : 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: (isDirectionalResolve ? .1 : .16) / speed }} style={{ "--resolve-duration": `${resolveDuration / speed}s` } as React.CSSProperties}>
+        <ImageResolveVisual variant={variant} />
+      </motion.span>}
+    </AnimatePresence>
+    <motion.img className="image-demo-result" src="/image-loader-sample.png" alt="Generated abstract artwork" style={{ opacity: visiblePhase === "loaded" ? 1 : 0 }} />
+  </span>;
+}
+
 function InUsePanel({ loaderColor, imageLoaderColor, speed, paused, restartKey, onPauseToggle, onRestart, onSpeedChange }: {
   loaderColor: string;
   imageLoaderColor: string;
@@ -285,7 +347,7 @@ function InUsePanel({ loaderColor, imageLoaderColor, speed, paused, restartKey, 
           <header><b>Canvas</b><i /></header>
           <div className="context-image-workspace">
             <div className="context-image-output">
-              <span className="image-demo-stage"><ImageLoader key={`${imageVariant}-${restartKey}`} variant={imageVariant} size="100%" radius={13} speed={speed} color={imageLoaderColor} paused={paused} /></span>
+              <ImageLoaderDemo key={`${imageVariant}-${restartKey}`} variant={imageVariant} speed={speed} color={imageLoaderColor} paused={paused} />
               <p><strong>Generating artwork</strong><span>1024 × 1024</span></p>
             </div>
           </div>
