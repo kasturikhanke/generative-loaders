@@ -55,6 +55,7 @@ const imageLoaders: Array<{ id: ImageLoaderVariant; name: string }> = [
   { id: "scan", name: "Scan" },
   { id: "pixel-grid", name: "Pixel grid" },
   { id: "resolution", name: "Resolution" },
+  { id: "coalesce", name: "Coalesce" },
   { id: "focus", name: "Focus" },
   { id: "shutter", name: "Shutter" },
 ];
@@ -205,6 +206,7 @@ function ImageResolveVisual({ variant }: { variant: ImageLoaderVariant }) {
     const ring = Math.abs(x - 2.5) + Math.abs(y - 2.5) - 1;
     return <i key={index} style={{ "--resolve-position-x": `${x * 20}%`, "--resolve-position-y": `${y * 20}%`, "--resolve-ring": ring } as React.CSSProperties} />;
   })}</span>;
+  if (variant === "coalesce") return <span className="image-resolve-preview" />;
   if (variant === "focus") return <span className="image-resolve-focus" />;
   return <span className="image-resolve-shutter"><i /><i /></span>;
 }

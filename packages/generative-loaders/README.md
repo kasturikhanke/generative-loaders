@@ -1,6 +1,6 @@
 # generative-loaders
 
-Accessible React loading states designed for generative interfaces: sixteen animated text reveals, eighteen compact activity indicators, and eight image-generation placeholders.
+Accessible React loading states designed for generative interfaces: sixteen animated text reveals, eighteen compact activity indicators, and nine image-generation placeholders.
 
 [Live gallery](https://generativeloaders.com) · [Documentation](https://generativeloaders.com/docs) · [GitHub](https://github.com/kasturikhanke/generative-loaders) · [Report an issue](https://github.com/kasturikhanke/generative-loaders/issues/new/choose)
 

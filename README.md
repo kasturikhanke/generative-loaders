@@ -5,7 +5,7 @@
 [![npm downloads](https://img.shields.io/npm/dm/generative-loaders.svg)](https://www.npmjs.com/package/generative-loaders)
 [![MIT license](https://img.shields.io/badge/license-MIT-111111.svg)](./LICENSE)
 
-Accessible React loading states designed for generative interfaces: sixteen animated text reveals, eighteen compact activity indicators, and eight image-generation placeholders.
+Accessible React loading states designed for generative interfaces: sixteen animated text reveals, eighteen compact activity indicators, and nine image-generation placeholders.
 
 [Live gallery](https://generativeloaders.com) · [Documentation](https://generativeloaders.com/docs) · [npm](https://www.npmjs.com/package/generative-loaders) · [Report an issue](https://github.com/kasturikhanke/generative-loaders/issues/new/choose)
 
