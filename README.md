@@ -9,8 +9,6 @@ Accessible React loading states designed for generative interfaces: sixteen anim
 
 [Live gallery](https://generativeloaders.com) · [Documentation](https://generativeloaders.com/docs) · [npm](https://www.npmjs.com/package/generative-loaders) · [Report an issue](https://github.com/kasturikhanke/generative-loaders/issues/new/choose)
 
-![Generative Loaders gallery showing text, inline, and image loading states](./public/generative-loaders-og.png)
-
 ## Install
 
 ```bash
