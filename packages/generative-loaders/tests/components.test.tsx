@@ -28,7 +28,8 @@ const inlineVariants: InlineLoaderVariant[] = [
 ];
 
 const imageVariants: ImageLoaderVariant[] = [
-  "skeleton", "bands", "tiles", "scan", "pixel-grid", "resolution", "coalesce", "focus", "shutter",
+  "skeleton", "bands", "tiles", "scan", "pixel-grid", "resolution", "coalesce",
+  "diffusion", "contour", "raster", "bloom", "focus", "shutter",
 ];
 
 describe("ImageLoader", () => {
@@ -79,6 +80,20 @@ describe("ImageLoader", () => {
     expect(particles[0].style.getPropertyValue("--iml-start-x")).not.toBe(particles[1].style.getPropertyValue("--iml-start-x"));
     expect(particles[0].style.getPropertyValue("--iml-particle-size")).not.toBe(particles[1].style.getPropertyValue("--iml-particle-size"));
     expect(particles[0].style.getPropertyValue("--iml-mid-x")).toContain("%");
+  });
+
+  it("gives the extended image studies distinct visual structures", () => {
+    const { container, rerender } = render(<ImageLoader variant="diffusion" />);
+    expect(container.querySelectorAll(".iml-diffusion i")).toHaveLength(28);
+
+    rerender(<ImageLoader variant="contour" />);
+    expect(container.querySelectorAll(".iml-contour i")).toHaveLength(4);
+
+    rerender(<ImageLoader variant="raster" />);
+    expect(container.querySelectorAll(".iml-raster i")).toHaveLength(8);
+
+    rerender(<ImageLoader variant="bloom" />);
+    expect(container.querySelector(".iml-bloom em")).toBeInTheDocument();
   });
 
 });

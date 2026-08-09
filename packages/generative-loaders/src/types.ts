@@ -65,6 +65,10 @@ export type ImageLoaderVariant =
   | "pixel-grid"
   | "resolution"
   | "coalesce"
+  | "diffusion"
+  | "contour"
+  | "raster"
+  | "bloom"
   | "focus"
   | "shutter";
 

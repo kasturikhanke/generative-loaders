@@ -56,6 +56,10 @@ const imageLoaders: Array<{ id: ImageLoaderVariant; name: string }> = [
   { id: "pixel-grid", name: "Pixel grid" },
   { id: "resolution", name: "Resolution" },
   { id: "coalesce", name: "Coalesce" },
+  { id: "diffusion", name: "Diffusion" },
+  { id: "contour", name: "Contour" },
+  { id: "raster", name: "Raster" },
+  { id: "bloom", name: "Bloom" },
   { id: "focus", name: "Focus" },
   { id: "shutter", name: "Shutter" },
 ];
@@ -70,6 +74,13 @@ const resolutionResolveCells = Array.from({ length: 36 }, (_, index) => ({
   index,
   x: index % 6,
   y: Math.floor(index / 6),
+}));
+
+const diffusionResolveCells = Array.from({ length: 25 }, (_, index) => ({
+  index,
+  x: index % 5,
+  y: Math.floor(index / 5),
+  delay: ((index * 7) % 25) * .022,
 }));
 
 const speeds = [0.75, 1, 1.5];
@@ -207,6 +218,10 @@ function ImageResolveVisual({ variant }: { variant: ImageLoaderVariant }) {
     return <i key={index} style={{ "--resolve-position-x": `${x * 20}%`, "--resolve-position-y": `${y * 20}%`, "--resolve-ring": ring } as React.CSSProperties} />;
   })}</span>;
   if (variant === "coalesce") return <span className="image-resolve-preview" />;
+  if (variant === "diffusion") return <span className="image-resolve-diffusion">{diffusionResolveCells.map(({ index, x, y, delay }) => <i key={index} style={{ "--resolve-position-x": `${x * 25}%`, "--resolve-position-y": `${y * 25}%`, "--resolve-delay": `${delay}s` } as React.CSSProperties} />)}</span>;
+  if (variant === "contour") return <span className="image-resolve-contour"><i /><b /><em /></span>;
+  if (variant === "raster") return <span className="image-resolve-raster">{Array.from({ length: 8 }, (_, index) => <i key={index} style={{ "--resolve-i": index } as React.CSSProperties} />)}</span>;
+  if (variant === "bloom") return <span className="image-resolve-bloom" />;
   if (variant === "focus") return <span className="image-resolve-focus" />;
   return <span className="image-resolve-shutter"><i /><i /></span>;
 }

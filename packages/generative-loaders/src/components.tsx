@@ -417,6 +417,14 @@ const coalesceParticles = Array.from({ length: 24 }, (_, index) => {
   };
 });
 
+const diffusionParticles = Array.from({ length: 28 }, (_, index) => ({
+  index,
+  x: 8 + ((index * 37) % 84),
+  y: 8 + ((index * 53) % 84),
+  size: 1.8 + ((index * 7) % 5) * .7,
+  delay: -((index * 13) % 28) / 28,
+}));
+
 function ImageVisual({ variant }: Pick<ImageLoaderProps, "variant">) {
   if (variant === "skeleton") return <span className="iml-skeleton"><i /><b /></span>;
   if (variant === "bands") return <span className="iml-bands"><i /><i /><i /><b /></span>;
@@ -425,6 +433,10 @@ function ImageVisual({ variant }: Pick<ImageLoaderProps, "variant">) {
   if (variant === "pixel-grid") return <span className="iml-pixel-grid">{imageTiles.map(({ index, x, y }) => <i key={index} style={{ "--iml-x": x, "--iml-y": y, "--iml-delay": `${(x + y - 6) * .09}s` } as CSSProperties} />)}</span>;
   if (variant === "resolution") return <span className="iml-resolution">{resolutionCells.map(({ index, distance, tone }) => <i key={index} style={{ "--iml-delay": `${(distance - 6) * .055}s`, "--iml-tone": `${tone}%` } as CSSProperties} />)}</span>;
   if (variant === "coalesce") return <span className="iml-coalesce">{coalesceParticles.map(({ index, startX, startY, midX, midY, endX, endY, size, delay, opacity }) => <i key={index} style={{ "--iml-start-x": `${startX}%`, "--iml-start-y": `${startY}%`, "--iml-mid-x": `${midX}%`, "--iml-mid-y": `${midY}%`, "--iml-end-x": `${endX}%`, "--iml-end-y": `${endY}%`, "--iml-particle-size": `${size}%`, "--iml-delay": `calc(var(--iml-duration) * ${delay})`, "--iml-particle-opacity": opacity } as CSSProperties} />)}<b /></span>;
+  if (variant === "diffusion") return <span className="iml-diffusion">{diffusionParticles.map(({ index, x, y, size, delay }) => <i key={index} style={{ "--iml-x": `${x}%`, "--iml-y": `${y}%`, "--iml-dot-size": `${size}%`, "--iml-delay": `calc(var(--iml-duration) * ${delay})` } as CSSProperties} />)}</span>;
+  if (variant === "contour") return <span className="iml-contour">{Array.from({ length: 4 }, (_, index) => <i key={index} style={{ "--iml-inset": `${8 + index * 11}%`, "--iml-delay": `calc(var(--iml-duration) * ${index * -.06})` } as CSSProperties} />)}<b /></span>;
+  if (variant === "raster") return <span className="iml-raster">{Array.from({ length: 8 }, (_, index) => <i key={index} style={{ "--iml-i": index, "--iml-delay": `calc(var(--iml-duration) * ${index * -.035})` } as CSSProperties} />)}</span>;
+  if (variant === "bloom") return <span className="iml-bloom"><i /><b /><em /></span>;
   if (variant === "focus") return <span className="iml-focus"><i /><i /><i /><b /></span>;
   return <span className="iml-shutter"><i /><i /><b /><em /></span>;
 }

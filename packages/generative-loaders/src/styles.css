@@ -471,6 +471,30 @@
 @keyframes iml-coalesce-flow { 0% { left:var(--iml-start-x); top:var(--iml-start-y); opacity:0; transform:translate(-50%,-50%) scale(.35); } 14% { opacity:.26; transform:translate(-50%,-50%) scale(.62); } 56% { left:var(--iml-mid-x); top:var(--iml-mid-y); opacity:var(--iml-particle-opacity); transform:translate(-50%,-50%) scale(.86); } 86% { left:var(--iml-end-x); top:var(--iml-end-y); opacity:var(--iml-particle-opacity); transform:translate(-50%,-50%) scale(1); } 100% { left:50%; top:50%; opacity:0; transform:translate(-50%,-50%) scale(.12); } }
 @keyframes iml-coalesce-core { 0%,100% { opacity:.46; transform:scale(.76); } 82% { opacity:.9; transform:scale(1.08); } }
 
+.iml-diffusion { inset:7%!important; }
+.iml-diffusion i { left:var(--iml-x); top:var(--iml-y); width:var(--iml-dot-size); aspect-ratio:1; border-radius:50%; background:currentColor; animation:iml-diffusion var(--iml-duration) ease-in-out infinite; animation-delay:var(--iml-delay); }
+@keyframes iml-diffusion { 0%,100% { opacity:.06; filter:blur(2px); transform:translate(-50%,-50%) scale(.35); } 38% { opacity:.7; filter:blur(0); transform:translate(-50%,-50%) scale(1); } 68% { opacity:.2; filter:blur(.5px); transform:translate(-50%,-50%) scale(.64); } }
+
+.iml-contour { inset:7%!important; }
+.iml-contour i { inset:var(--iml-inset); border:1px solid currentColor; border-radius:22% 34% 25% 38%; animation:iml-contour var(--iml-duration) cubic-bezier(.22,1,.36,1) infinite; animation-delay:var(--iml-delay); }
+.iml-contour b { inset:45%; border-radius:42%; background:currentColor; animation:iml-contour-core var(--iml-duration) ease-in-out infinite; }
+@keyframes iml-contour { 0%,14%,100% { opacity:.08; transform:scale(.88) rotate(-3deg); } 48%,74% { opacity:.62; transform:scale(1) rotate(0); } }
+@keyframes iml-contour-core { 0%,100% { opacity:.12; transform:scale(.62); } 56%,76% { opacity:.72; transform:scale(1); } }
+
+.iml-raster { display:grid!important; grid-template-rows:repeat(8,1fr); gap:4%; padding:8%; }
+.iml-raster i { position:relative; width:100%; height:100%; border-radius:2px; background:currentColor; transform-origin:left; animation:iml-raster var(--iml-duration) cubic-bezier(.65,0,.35,1) infinite; animation-delay:var(--iml-delay); }
+.iml-raster i:nth-child(even) { transform-origin:right; }
+@keyframes iml-raster { 0%,12%,100% { opacity:.06; transform:scaleX(.12); } 46%,72% { opacity:.64; transform:scaleX(1); } }
+
+.iml-bloom { inset:7%!important; overflow:hidden; }
+.iml-bloom i,.iml-bloom b,.iml-bloom em { border-radius:50%; }
+.iml-bloom i { inset:8%; border:1px solid color-mix(in srgb,currentColor 32%,transparent); animation:iml-bloom-ring var(--iml-duration) cubic-bezier(.22,1,.36,1) infinite; }
+.iml-bloom b { inset:25%; background:color-mix(in srgb,currentColor 18%,transparent); box-shadow:0 0 calc(var(--iml-size) * .12) color-mix(in srgb,currentColor 22%,transparent); animation:iml-bloom-fill var(--iml-duration) ease-in-out infinite; }
+.iml-bloom em { inset:42%; background:currentColor; animation:iml-bloom-core var(--iml-duration) ease-in-out infinite; }
+@keyframes iml-bloom-ring { 0%,12%,100% { opacity:.08; transform:scale(.28); } 58%,78% { opacity:.5; transform:scale(1); } }
+@keyframes iml-bloom-fill { 0%,100% { opacity:.05; transform:scale(.45); filter:blur(5px); } 54%,76% { opacity:.55; transform:scale(1.28); filter:blur(0); } }
+@keyframes iml-bloom-core { 0%,100% { opacity:.16; transform:scale(.6); } 48%,72% { opacity:.86; transform:scale(1); } }
+
 .iml-focus i { border:1px solid currentColor; animation:iml-focus var(--iml-duration) cubic-bezier(.22,1,.36,1) infinite; }
 .iml-focus i:nth-child(1) { inset:8%; }
 .iml-focus i:nth-child(2) { inset:21%; animation-delay:calc(var(--iml-duration) * -.07); }

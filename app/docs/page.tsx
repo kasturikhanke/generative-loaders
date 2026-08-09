@@ -4,7 +4,7 @@ import Link from "next/link";
 
 const textVariants = "decode · typewriter · skeleton · cascade · focus · wipe · flip · redact · line · terminal · wave · dissolve · slice · tracking · coalesce · fragments";
 const inlineVariants = "glyph · matrix · orbit · ripple · signal · spark · rotor · pixel-drift · chomp · snake · fold · gravity · domino · aperture · dot-pulse · vortex · halo · count-up";
-const imageVariants = "skeleton · bands · tiles · scan · pixel-grid · resolution · coalesce · focus · shutter";
+const imageVariants = "skeleton · bands · tiles · scan · pixel-grid · resolution · coalesce · diffusion · contour · raster · bloom · focus · shutter";
 
 function Code({ children }: { children: string }) {
   return <pre className="docs-code"><code>{children}</code></pre>;
