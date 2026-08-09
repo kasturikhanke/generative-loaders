@@ -498,13 +498,14 @@
 @keyframes iml-focus-core { 0%,14%,100% { opacity:.08; transform:scale(.72); } 48%,76% { opacity:.62; transform:scale(1); } }
 
 .iml-shutter { inset:7%!important; overflow:hidden; border:1px solid color-mix(in srgb,currentColor 18%,transparent); }
-.iml-shutter i { top:0; bottom:0; width:50%; background:color-mix(in srgb,currentColor 64%,transparent); animation:iml-shutter var(--iml-duration) cubic-bezier(.65,0,.35,1) infinite; }
+.iml-shutter i { top:0; bottom:0; width:50%; background:linear-gradient(90deg,color-mix(in srgb,currentColor 50%,transparent),color-mix(in srgb,currentColor 68%,transparent)); will-change:transform,opacity; animation:iml-shutter-panel var(--iml-duration) linear infinite; }
 .iml-shutter i:nth-child(1) { left:0; transform-origin:left; }
-.iml-shutter i:nth-child(2) { right:0; transform-origin:right; }
-.iml-shutter b { left:calc(50% - .5px); top:0; bottom:0; width:1px; background:color-mix(in srgb,currentColor 35%,transparent); }
-.iml-shutter em { inset:13%; border:1px solid color-mix(in srgb,currentColor 42%,transparent); animation:iml-shutter-mark var(--iml-duration) ease-in-out infinite; }
-@keyframes iml-shutter { 0%,14%,100% { opacity:.1; transform:scaleX(.72); } 46%,76% { opacity:.68; transform:scaleX(1); } }
-@keyframes iml-shutter-mark { 0%,14%,100% { opacity:.06; transform:scale(.94); } 48%,76% { opacity:.42; transform:scale(1); } }
+.iml-shutter i:nth-child(2) { right:0; transform-origin:right; background:linear-gradient(270deg,color-mix(in srgb,currentColor 50%,transparent),color-mix(in srgb,currentColor 68%,transparent)); }
+.iml-shutter b { left:calc(50% - .5px); top:0; bottom:0; width:1px; background:color-mix(in srgb,currentColor 42%,transparent); animation:iml-shutter-seam var(--iml-duration) ease-in-out infinite; }
+.iml-shutter em { inset:13%; border:1px solid color-mix(in srgb,currentColor 42%,transparent); will-change:transform,opacity; animation:iml-shutter-mark var(--iml-duration) cubic-bezier(.22,1,.36,1) infinite; }
+@keyframes iml-shutter-panel { 0%,10%,100% { opacity:.08; transform:scaleX(.2); animation-timing-function:cubic-bezier(.22,1,.36,1); } 42% { opacity:.68; transform:scaleX(1); } 68% { opacity:.68; transform:scaleX(1); animation-timing-function:cubic-bezier(.65,0,.35,1); } 92% { opacity:.08; transform:scaleX(.2); } }
+@keyframes iml-shutter-seam { 0%,18%,100% { opacity:.08; transform:scaleY(.72); } 44%,72% { opacity:.48; transform:scaleY(1); } 90% { opacity:.12; transform:scaleY(.8); } }
+@keyframes iml-shutter-mark { 0%,12%,100% { opacity:.04; transform:scale(.9); } 44% { opacity:.42; transform:scale(1); } 68% { opacity:.42; transform:scale(1); } 92% { opacity:.04; transform:scale(.9); } }
 
 .iml-loader[data-paused="true"] *,
 .iml-loader[data-paused="true"] *::before,

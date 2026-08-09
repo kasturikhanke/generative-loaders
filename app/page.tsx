@@ -234,7 +234,7 @@ function ImageLoaderDemo({ variant, color, speed, paused }: {
   const reduceMotion = Boolean(useReducedMotion());
   const visiblePhase = reduceMotion ? "loaded" : phase;
   const isDirectionalResolve = variant === "shutter";
-  const resolveDuration = isDirectionalResolve ? 1.15 : 1.05;
+  const resolveDuration = 1.05;
 
   useEffect(() => {
     if (paused || reduceMotion) return;

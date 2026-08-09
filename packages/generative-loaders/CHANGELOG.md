@@ -4,6 +4,7 @@
 
 - Added the `coalesce` image loader, which gathers organic fragments into a unified image plane.
 - Added three image-generation loaders: `diffusion`, `raster`, and `bloom`.
+- Smoothed the `shutter` panel loop and aligned its gallery handoff with the generated image.
 
 ## 0.1.1
 

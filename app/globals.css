@@ -312,11 +312,11 @@ a { color:inherit; }
 .image-resolve-focus { background:url("/image-loader-sample.png") center/cover; animation:image-resolve-focus var(--resolve-duration) cubic-bezier(.16,1,.3,1) forwards; }
 @keyframes image-resolve-focus { 0% { opacity:.45; filter:blur(10px); transform:scale(1.07); } 100% { opacity:1; filter:blur(0); transform:scale(1); } }
 
-.image-resolve-shutter i { top:0; width:50%; height:100%; background-image:url("/image-loader-sample.png"); background-size:200% 100%; animation-duration:var(--resolve-duration); animation-timing-function:cubic-bezier(.65,0,.35,1); animation-fill-mode:forwards; }
-.image-resolve-shutter i:first-child { left:0; background-position:left center; transform:translateX(-18%); animation-name:image-resolve-shutter-left; }
-.image-resolve-shutter i:last-child { right:0; background-position:right center; transform:translateX(18%); animation-name:image-resolve-shutter-right; }
-@keyframes image-resolve-shutter-left { from { opacity:.25; transform:translateX(-18%); } to { opacity:1; transform:translateX(0); } }
-@keyframes image-resolve-shutter-right { from { opacity:.25; transform:translateX(18%); } to { opacity:1; transform:translateX(0); } }
+.image-resolve-shutter i { top:0; width:50%; height:100%; background-image:url("/image-loader-sample.png"); background-size:200% 100%; will-change:transform,opacity; animation-duration:var(--resolve-duration); animation-timing-function:cubic-bezier(.22,1,.36,1); animation-fill-mode:forwards; }
+.image-resolve-shutter i:first-child { left:0; background-position:left center; transform:translateX(-22%) scale(1.035); animation-name:image-resolve-shutter-left; }
+.image-resolve-shutter i:last-child { right:0; background-position:right center; transform:translateX(22%) scale(1.035); animation-name:image-resolve-shutter-right; }
+@keyframes image-resolve-shutter-left { 0% { opacity:.18; transform:translateX(-22%) scale(1.035); } 72% { opacity:1; transform:translateX(1.25%) scale(1.006); } 100% { opacity:1; transform:translateX(0) scale(1); } }
+@keyframes image-resolve-shutter-right { 0% { opacity:.18; transform:translateX(22%) scale(1.035); } 72% { opacity:1; transform:translateX(-1.25%) scale(1.006); } 100% { opacity:1; transform:translateX(0) scale(1); } }
 
 .image-demo-stage[data-paused="true"] .image-resolve-layer *,
 .image-demo-stage[data-paused="true"] .image-resolve-layer::before,
