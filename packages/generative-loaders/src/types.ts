@@ -66,7 +66,6 @@ export type ImageLoaderVariant =
   | "resolution"
   | "coalesce"
   | "diffusion"
-  | "contour"
   | "raster"
   | "bloom"
   | "focus"

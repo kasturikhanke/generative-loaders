@@ -1,6 +1,6 @@
 # generative-loaders
 
-Accessible React loading states designed for generative interfaces: sixteen animated text reveals, eighteen compact activity indicators, and thirteen image-generation placeholders.
+Accessible React loading states designed for generative interfaces: sixteen animated text reveals, eighteen compact activity indicators, and twelve image-generation placeholders.
 
 [Live gallery](https://generativeloaders.com) · [Documentation](https://generativeloaders.com/docs) · [GitHub](https://github.com/kasturikhanke/generative-loaders) · [Report an issue](https://github.com/kasturikhanke/generative-loaders/issues/new/choose)
 
@@ -44,7 +44,7 @@ return <TextLoader text={text} variant="cascade" />;
 
 **Inline:** `glyph`, `matrix`, `orbit`, `ripple`, `signal`, `spark`, `rotor`, `pixel-drift`, `chomp`, `snake`, `fold`, `gravity`, `domino`, `aperture`, `dot-pulse`, `vortex`, `halo`, `count-up`
 
-**Image:** `skeleton`, `bands`, `tiles`, `scan`, `pixel-grid`, `resolution`, `coalesce`, `diffusion`, `contour`, `raster`, `bloom`, `focus`, `shutter`
+**Image:** `skeleton`, `bands`, `tiles`, `scan`, `pixel-grid`, `resolution`, `coalesce`, `diffusion`, `raster`, `bloom`, `focus`, `shutter`
 
 ## Props
 

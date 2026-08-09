@@ -3,7 +3,7 @@
 ## Unreleased
 
 - Added the `coalesce` image loader, which gathers organic fragments into a unified image plane.
-- Added four image-generation loaders: `diffusion`, `contour`, `raster`, and `bloom`.
+- Added three image-generation loaders: `diffusion`, `raster`, and `bloom`.
 
 ## 0.1.1
 

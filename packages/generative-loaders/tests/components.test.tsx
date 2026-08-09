@@ -29,7 +29,7 @@ const inlineVariants: InlineLoaderVariant[] = [
 
 const imageVariants: ImageLoaderVariant[] = [
   "skeleton", "bands", "tiles", "scan", "pixel-grid", "resolution", "coalesce",
-  "diffusion", "contour", "raster", "bloom", "focus", "shutter",
+  "diffusion", "raster", "bloom", "focus", "shutter",
 ];
 
 describe("ImageLoader", () => {
@@ -85,9 +85,6 @@ describe("ImageLoader", () => {
   it("gives the extended image studies distinct visual structures", () => {
     const { container, rerender } = render(<ImageLoader variant="diffusion" />);
     expect(container.querySelectorAll(".iml-diffusion i")).toHaveLength(28);
-
-    rerender(<ImageLoader variant="contour" />);
-    expect(container.querySelectorAll(".iml-contour i")).toHaveLength(4);
 
     rerender(<ImageLoader variant="raster" />);
     expect(container.querySelectorAll(".iml-raster i")).toHaveLength(8);
