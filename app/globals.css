@@ -328,7 +328,7 @@ a { color:inherit; }
 .footer p a { color:inherit; text-underline-offset:3px; }
 .footer>a:last-child { justify-self:end; color:#858a93; text-decoration:none; font-size:8px; }
 .footer-editorial { margin-top:108px; overflow:hidden; }
-.footer-editorial-inner { width:min(100% - 40px,1600px); padding-top:38px; padding-bottom:24px; }
+.footer-editorial-inner { padding-top:38px; padding-bottom:24px; }
 .footer-editorial-meta nav { display:flex; align-items:center; gap:26px; }
 .footer-editorial-meta a { position:relative; color:var(--ink); text-decoration:none; font-size:10px; }
 .footer-editorial-meta a::after { content:""; position:absolute; right:0; bottom:-4px; left:0; height:1px; background:currentColor; transform:scaleX(0); transform-origin:right; transition:transform .35s cubic-bezier(.22,1,.36,1); }
