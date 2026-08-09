@@ -236,7 +236,7 @@ function ImageLoaderDemo({ variant, color, speed, paused }: {
       {visiblePhase === "loading" && <motion.span className="image-loader-layer" key="loader" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, scale: isDirectionalResolve ? 1 : .99 }} transition={{ duration: (isDirectionalResolve ? .22 : .3) / speed, ease: [0.65, 0, 0.35, 1] }}>
         <ImageLoader variant={variant} size="100%" radius={13} speed={speed} color={color} paused={paused} label={`${variant} image generation`} />
       </motion.span>}
-      {(visiblePhase === "resolving" || visiblePhase === "loaded") && <motion.span className={`image-resolve-layer image-resolve-layer-${variant}`} key="resolving" role={visiblePhase === "resolving" ? "status" : undefined} aria-label={visiblePhase === "resolving" ? "Resolving image" : undefined} initial={{ opacity: isDirectionalResolve ? 1 : 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: (isDirectionalResolve ? .1 : .16) / speed }} style={{ "--resolve-duration": `${resolveDuration / speed}s` } as React.CSSProperties}>
+      {visiblePhase === "resolving" && <motion.span className={`image-resolve-layer image-resolve-layer-${variant}`} key="resolving" role="status" aria-label="Resolving image" initial={{ opacity: isDirectionalResolve ? 1 : 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: (isDirectionalResolve ? .1 : .16) / speed }} style={{ "--resolve-duration": `${resolveDuration / speed}s` } as React.CSSProperties}>
         <ImageResolveVisual variant={variant} />
       </motion.span>}
     </AnimatePresence>
