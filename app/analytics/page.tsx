@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import { env } from "cloudflare:workers";
+import { notFound } from "next/navigation";
 import { BrandMark } from "../components/brand-mark";
+import { requireChatGPTUser } from "../chatgpt-auth";
 import { CampaignLinkBuilder } from "./campaign-link-builder";
 
 export const metadata: Metadata = {
   title: "Launch analytics — Generative Loaders",
   description: "Downloads, campaign attribution, and Reddit launch signals for Generative Loaders.",
+  robots: { index: false, follow: false },
 };
 
 export const dynamic = "force-dynamic";
@@ -85,7 +88,18 @@ async function getCampaigns(): Promise<CampaignRow[]> {
   }
 }
 
+async function requireAnalyticsAccess() {
+  const user = await requireChatGPTUser("/analytics");
+  const allowedEmails = (env.ANALYTICS_ALLOWED_EMAILS ?? "")
+    .split(",")
+    .map((email) => email.trim().toLowerCase())
+    .filter(Boolean);
+
+  if (!allowedEmails.includes(user.email.toLowerCase())) notFound();
+}
+
 export default async function AnalyticsPage() {
+  await requireAnalyticsAccess();
   const [{ days, live }, campaigns] = await Promise.all([getDownloads(), getCampaigns()]);
   const today = isoDay(new Date());
   const total = days.reduce((sum, day) => sum + day.downloads, 0);
@@ -101,7 +115,7 @@ export default async function AnalyticsPage() {
   return <main className="analytics-page">
     <nav className="analytics-nav shell">
       <a className="brand" href="/"><BrandMark />Generative Loaders</a>
-      <div><a href="/">Gallery</a><a href="/docs">Docs</a><a className="active" href="/analytics">Analytics</a></div>
+      <div><a href="/">Gallery</a><a href="/docs">Docs</a><a href="/signout-with-chatgpt?return_to=%2F">Sign out</a></div>
     </nav>
 
     <header className="analytics-hero shell">

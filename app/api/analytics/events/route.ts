@@ -10,6 +10,11 @@ function clean(value: unknown, fallback: string) {
 
 export async function POST(request: Request) {
   try {
+    const origin = request.headers.get("origin");
+    if (origin && new URL(origin).host !== new URL(request.url).host) {
+      return Response.json({ error: "Cross-origin analytics events are not accepted" }, { status: 403 });
+    }
+
     const payload = await request.json() as { event?: unknown; source?: unknown; campaign?: unknown };
     const event = clean(payload.event, "");
     if (!ALLOWED_EVENTS.has(event)) return Response.json({ error: "Unsupported event" }, { status: 400 });
