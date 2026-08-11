@@ -117,11 +117,12 @@ function PlaybackControls({ paused, speed, onPauseToggle, onRestart, onSpeedChan
   </div>;
 }
 
-function CopyButton({ value, label = "Copy", className = "", ariaLabel, iconOnly = false }: { value: string; label?: string; className?: string; ariaLabel?: string; iconOnly?: boolean }) {
+function CopyButton({ value, label = "Copy", className = "", ariaLabel, iconOnly = false, analyticsEvent }: { value: string; label?: string; className?: string; ariaLabel?: string; iconOnly?: boolean; analyticsEvent?: string }) {
   const [copied, setCopied] = useState(false);
 
   async function copy() {
     await navigator.clipboard.writeText(value);
+    if (analyticsEvent) window.dispatchEvent(new CustomEvent("gl-analytics", { detail: { event: analyticsEvent } }));
     setCopied(true);
     window.setTimeout(() => setCopied(false), 1300);
   }
@@ -410,7 +411,7 @@ function SiteFooter() {
 
       <div className="footer-editorial-meta">
         <p>Created by Kasturi Khanke</p>
-        <nav aria-label="Footer links"><a href="https://github.com/kasturikhanke/generative-loaders">GitHub ↗</a><a href="#top">Back to top ↑</a></nav>
+        <nav aria-label="Footer links"><a href="/analytics">Analytics</a><a href="https://github.com/kasturikhanke/generative-loaders">GitHub ↗</a><a href="#top">Back to top ↑</a></nav>
       </div>
     </div>
   </footer>;
@@ -472,7 +473,7 @@ export default function Home() {
   return <main className="gallery-home" id="top">
     <nav className="nav shell">
       <a className="brand" href="#top"><BrandMark />Generative Loaders</a>
-      <div className="nav-links"><a href="#loaders">Loaders</a><a href="/docs">Docs</a></div>
+      <div className="nav-links"><a href="#loaders">Loaders</a><a href="/docs">Docs</a><a href="/analytics">Analytics</a></div>
       <div className="nav-actions">
         <GitHubButton compact />
         <button className="theme-toggle" type="button" onClick={toggleTheme} aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`} title={`Switch to ${theme === "light" ? "dark" : "light"} mode`}><ThemeIcon theme={theme} /></button>
@@ -487,7 +488,7 @@ export default function Home() {
 
       <div className="install-command homepage-install" aria-label="Install Generative Loaders from npm">
         <code>{installCommand}</code>
-        <CopyButton value={installCommand} />
+        <CopyButton value={installCommand} analyticsEvent="install_copy" />
       </div>
 
       <div className="homepage-view-toggle" role="tablist" aria-label="Homepage view">
