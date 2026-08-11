@@ -117,12 +117,11 @@ function PlaybackControls({ paused, speed, onPauseToggle, onRestart, onSpeedChan
   </div>;
 }
 
-function CopyButton({ value, label = "Copy", className = "", ariaLabel, iconOnly = false, analyticsEvent }: { value: string; label?: string; className?: string; ariaLabel?: string; iconOnly?: boolean; analyticsEvent?: string }) {
+function CopyButton({ value, label = "Copy", className = "", ariaLabel, iconOnly = false }: { value: string; label?: string; className?: string; ariaLabel?: string; iconOnly?: boolean }) {
   const [copied, setCopied] = useState(false);
 
   async function copy() {
     await navigator.clipboard.writeText(value);
-    if (analyticsEvent) window.dispatchEvent(new CustomEvent("gl-analytics", { detail: { event: analyticsEvent } }));
     setCopied(true);
     window.setTimeout(() => setCopied(false), 1300);
   }
@@ -488,7 +487,7 @@ export default function Home() {
 
       <div className="install-command homepage-install" aria-label="Install Generative Loaders from npm">
         <code>{installCommand}</code>
-        <CopyButton value={installCommand} analyticsEvent="install_copy" />
+        <CopyButton value={installCommand} />
       </div>
 
       <div className="homepage-view-toggle" role="tablist" aria-label="Homepage view">
