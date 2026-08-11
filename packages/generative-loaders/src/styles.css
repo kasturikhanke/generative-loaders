@@ -266,8 +266,8 @@
 @keyframes il-matrix { 0%,100% { opacity: .22; transform: scale(.48); } 48% { opacity: 1; transform: scale(1); } }
 
 .il-orbit,
-.il-ripple,
 .il-spark { position: relative; width: 100%; height: 100%; display: block; }
+.il-ripple { width: 100%; height: 100%; display: grid; place-items: center; }
 .il-orbit { animation: il-turn var(--il-duration) linear infinite; }
 .il-orbit i { position: absolute; width: 18%; aspect-ratio: 1; border-radius: 50%; background: currentColor; }
 .il-orbit i:nth-child(1) { left: 41%; top: 0; }
@@ -277,7 +277,14 @@
 @keyframes il-turn { to { transform: rotate(360deg); } }
 
 .il-ripple i,
-.il-ripple b { position: absolute; inset: 41%; border-radius: 50%; background: currentColor; }
+.il-ripple b {
+  grid-area: 1 / 1;
+  width: 18%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: currentColor;
+  transform-origin: center;
+}
 .il-ripple i { animation: il-ripple var(--il-duration) ease-out infinite; }
 .il-ripple i:nth-child(2) { animation-delay: calc(var(--il-duration) / -3); }
 .il-ripple i:nth-child(3) { animation-delay: calc(var(--il-duration) / -1.5); }
