@@ -41,6 +41,7 @@ a { color:inherit; }
 .github-button:hover { background:var(--control); }
 .github-button svg { width:15px; height:15px; fill:currentColor; }
 .github-button>span { font-size:10px; font-weight:650; }
+.github-button small { padding-left:8px; border-left:1px solid var(--line); color:var(--muted); font-size:8px; font-weight:650; white-space:nowrap; }
 .github-button-compact { min-height:31px; padding-inline:9px; }
 .github-button-compact>span { font-size:9px; }
 .theme-toggle { width:31px; height:31px; display:grid; place-items:center; padding:0; border:1px solid var(--line); border-radius:7px; background:var(--surface); cursor:pointer; }
