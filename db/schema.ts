@@ -1,4 +1,19 @@
-// Intentionally empty by default.
-// Add Drizzle tables here when the site actually needs a database.
-// See examples/d1/db/schema.ts for an opt-in example.
-export {};
+import { sql } from "drizzle-orm";
+import { integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
+
+export const analyticsDaily = sqliteTable("analytics_daily", {
+  day: text("day").notNull(),
+  event: text("event").notNull(),
+  path: text("path").notNull().default("/"),
+  source: text("source").notNull().default("direct"),
+  campaign: text("campaign").notNull().default("untagged"),
+  referrer: text("referrer").notNull().default("direct"),
+  count: integer("count").notNull().default(0),
+  updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+}, (table) => [primaryKey({ columns: [table.day, table.event, table.path, table.source, table.campaign, table.referrer] })]);
+
+export const analyticsVisitors = sqliteTable("analytics_visitors", {
+  day: text("day").notNull(),
+  visitorId: text("visitor_id").notNull(),
+  createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+}, (table) => [primaryKey({ columns: [table.day, table.visitorId] })]);
