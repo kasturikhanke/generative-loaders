@@ -80,6 +80,13 @@ describe("ImageLoader", () => {
     expect(particles[0].style.getPropertyValue("--iml-start-x")).not.toBe(particles[1].style.getPropertyValue("--iml-start-x"));
     expect(particles[0].style.getPropertyValue("--iml-particle-size")).not.toBe(particles[1].style.getPropertyValue("--iml-particle-size"));
     expect(particles[0].style.getPropertyValue("--iml-mid-x")).toContain("%");
+    for (const particle of particles) {
+      for (const property of ["--iml-start-x", "--iml-start-y", "--iml-mid-x", "--iml-mid-y", "--iml-end-x", "--iml-end-y", "--iml-particle-size"]) {
+        expect(particle.style.getPropertyValue(property)).toMatch(/^-?\d+\.\d{3}%$/);
+      }
+      expect(particle.style.getPropertyValue("--iml-particle-opacity")).toMatch(/^\d+\.\d{3}$/);
+      expect(particle.style.getPropertyValue("--iml-delay")).toMatch(/^calc\(var\(--iml-duration\) \* -?\d+\.\d{3}\)$/);
+    }
   });
 
   it("gives the extended image studies distinct visual structures", () => {

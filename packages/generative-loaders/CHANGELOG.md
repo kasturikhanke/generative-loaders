@@ -1,9 +1,11 @@
 # Changelog
 
-## Unreleased
+## 0.1.2
 
 - Added the `coalesce` image loader, which gathers organic fragments into a unified image plane.
 - Added three image-generation loaders: `diffusion`, `raster`, and `bloom`.
+- Added the `dot-pulse`, `vortex`, and `halo` inline loaders to the published package.
+- Quantized generated image-loader geometry so server and client markup remains identical across JavaScript runtimes.
 - Smoothed the `shutter` panel loop and aligned its gallery handoff with the generated image.
 
 ## 0.1.1

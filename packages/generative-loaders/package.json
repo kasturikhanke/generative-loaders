@@ -1,6 +1,6 @@
 {
   "name": "generative-loaders",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Accessible text-streaming, inline activity, and image-generation loaders for React.",
   "type": "module",
   "sideEffects": [
