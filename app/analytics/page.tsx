@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { env } from "cloudflare:workers";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BrandMark } from "../components/brand-mark";
 import { requireChatGPTUser } from "../chatgpt-auth";
@@ -77,7 +78,7 @@ export default async function AnalyticsPage() {
   const maxViews = Math.max(...traffic.days.map((day) => day.pageViews), 1);
 
   return <main className="analytics-page">
-    <nav className="analytics-nav shell"><a className="brand" href="/"><BrandMark />Generative Loaders</a><div><a href="/">Gallery</a><a href="/docs">Docs</a><a href="/signout-with-chatgpt?return_to=%2F">Sign out</a></div></nav>
+    <nav className="analytics-nav shell"><Link className="brand" href="/"><BrandMark />Generative Loaders</Link><div><Link href="/">Gallery</Link><Link href="/docs">Docs</Link><a href="/signout-with-chatgpt?return_to=%2F">Sign out</a></div></nav>
     <header className="analytics-hero shell"><div><p className="analytics-kicker">Private analytics · last 30 days</p><h1>Your site’s pulse, in one place.</h1><p>Traffic, acquisition, product interest, and npm distribution. Tracking starts with this release and excludes personal data.</p></div><span className="data-status live"><i />Live tracking</span></header>
     <section className="analytics-summary shell" aria-label="Analytics summary">
       <article><span>Page views</span><strong>{formatNumber(totalViews)}</strong><small>Last 30 days</small></article>
@@ -94,6 +95,6 @@ export default async function AnalyticsPage() {
       <article className="analytics-panel"><div className="panel-heading"><div><span>04</span><h2>Campaigns</h2></div><small>Tagged visits</small></div><Ranking rows={traffic.campaigns} empty="No tagged campaign traffic yet." /><CampaignLinkBuilder /></article>
       <article className="analytics-panel"><div className="panel-heading"><div><span>05</span><h2>Product interest</h2></div><small>30 days</small></div><div className="analytics-actions"><div><span>Install command copies</span><strong>{formatNumber(traffic.installCopies)}</strong></div><div><span>Clicks through to npm</span><strong>{formatNumber(traffic.npmClicks)}</strong></div></div></article>
     </section>
-    <footer className="analytics-footer shell"><span>Counts begin when this version goes live; past website visits cannot be reconstructed.</span><a href="/">Back to gallery →</a></footer>
+    <footer className="analytics-footer shell"><span>Counts begin when this version goes live; past website visits cannot be reconstructed.</span><Link href="/">Back to gallery →</Link></footer>
   </main>;
 }
